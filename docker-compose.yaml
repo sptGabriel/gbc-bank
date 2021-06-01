@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  api:
+    build: .
+    container_name: api
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    volumes:
+      - .:/go/src/
+    depends_on:
+      - db
+  db:
+    image: postgres:12.2-alpine
+    container_name: "database"
+    restart: always
+    tty: true
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bk
+    ports:
+      - "5432:5432"
+volumes:
+  db:
+    driver: local
