@@ -19,7 +19,7 @@ func NewBCryptAdapter(salt int) BCryptAdapter {
 func (bc BCryptAdapter) Hash(plainText *string) error {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(*plainText), bcrypt.DefaultCost)
 	if err != nil {
-		return  app.NewInternalError("failed to hash password", err)
+		return app.NewInternalError("failed to hash password", err)
 	}
 	*plainText = string(hashed)
 	return nil

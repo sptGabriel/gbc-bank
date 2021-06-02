@@ -42,23 +42,22 @@ func GetErrorCode(err error) int {
 	if !ok {
 		return 500
 	}
-
 	if e.code != 0 {
 		return e.code
 	}
 
 	return GetErrorCode(e.parent)
 }
-func NewDomainError(m string) Error {
-	return Error{
+func NewDomainError(m string) error {
+	return &Error{
 		group:   domain,
 		message: m,
 		code:    400,
 	}
 }
 
-func NewInternalError(m string, p error) Error {
-	return Error{
+func NewInternalError(m string, p error) error {
+	return &Error{
 		group:   internal,
 		message: m,
 		parent:  p,
@@ -66,26 +65,34 @@ func NewInternalError(m string, p error) Error {
 	}
 }
 
-func NewConflictError(e string) Error {
+func NewConflictError(e string) error {
 	entity := ""
 	if e != "" {
 		entity = e + " "
 	}
-	return Error{
+	return &Error{
 		group:   domain,
 		code:    409,
 		message: entity + "already exists",
 	}
 }
 
-func NewNotFoundError(e string) Error {
+func NewNotFoundError(e string) error {
 	entity := ""
 	if e != "" {
 		entity = e + " "
 	}
-	return Error{
+	return &Error{
 		group:   domain,
 		code:    404,
 		message: entity + "not found",
+	}
+}
+
+func NewMalformedJSONError() error {
+	return &Error{
+		group:   domain,
+		code:    400,
+		message: "The request cannot be fulfilled due to bad syntax",
 	}
 }
