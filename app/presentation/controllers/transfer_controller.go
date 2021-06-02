@@ -12,19 +12,19 @@ import (
 	"net/http"
 )
 
-type AccountController struct {
+type TransferController struct {
 	bus       mediator.Bus
 	validator *validator.Validate
 }
 
-func NewAccountController(b mediator.Bus, v *validator.Validate) *AccountController {
-	return &AccountController{bus: b, validator: v}
+func NewTransferController(b mediator.Bus, v *validator.Validate) *TransferController {
+	return &TransferController{bus: b, validator: v}
 }
 
-func (c AccountController) NewAccount(w http.ResponseWriter, r *http.Request) {
+func (c TransferController) MakeTransfer(w http.ResponseWriter, r *http.Request) {
 	logger := hlog.FromRequest(r)
 
-	var dto dtos.CreateAccountDTO
+	var dto dtos.MakeTransferDTO
 
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
 		responses.Error(w, logger, app.NewMalformedJSONError())
@@ -36,7 +36,7 @@ func (c AccountController) NewAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cmd := commands.NewCreateAccountCommand(dto.Secret, dto.CPF, dto.Name)
+	cmd := commands.NewMakeTransferCommand(dto.AccountOriginId, dto.AccountDestinationId, dto.Amount)
 
 	_, err := c.bus.Publish(logger.WithContext(r.Context()), cmd)
 	if err != nil {
@@ -45,12 +45,4 @@ func (c AccountController) NewAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, logger, http.StatusCreated, nil)
-}
-
-func (c AccountController) Me(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (c AccountController) UpdateBalance(w http.ResponseWriter, r *http.Request) {
-
 }

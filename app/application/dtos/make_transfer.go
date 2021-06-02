@@ -1,7 +1,7 @@
 package dtos
 
-type CreateAccountDTO struct {
-	Name   string `json:"name" validate:"required,min=10"`
-	CPF    string `json:"cpf" validate:"required,min=9,max=12"`
-	Secret string `json:"secret" validate:"required,min=8"`
+type MakeTransferDTO struct {
+	AccountOriginId      string `json:"account_origin_id" validate:"required,uuid"`
+	AccountDestinationId string `json:"account_destination_id" validate:"required,uuid"`
+	Amount               int 	`json:"amount" validate:"required"`
 }

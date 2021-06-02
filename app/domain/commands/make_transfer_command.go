@@ -1,15 +1,15 @@
 package commands
 
-type CreateAccountCommand struct {
-	Secret string
-	Cpf    string
-	Name   string
+type MakeTransferCommand struct {
+	AccountOriginId      string
+	AccountDestinationId string
+	Amount               int
 }
 
-func NewCreateAccountCommand(secret string, cpf string, name string) CreateAccountCommand {
-	return CreateAccountCommand{
-		Secret: secret,
-		Cpf:    cpf,
-		Name:   name,
+func NewMakeTransferCommand(accountOriginId string, accountDestinationId string, amount int) MakeTransferCommand {
+	return MakeTransferCommand{
+		AccountOriginId:      accountOriginId,
+		AccountDestinationId: accountDestinationId,
+		Amount:               amount,
 	}
 }
