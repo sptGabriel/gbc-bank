@@ -9,16 +9,16 @@ import (
 	"net/http"
 )
 
-type AccountsRouter struct {
-	controller *controllers.AccountController
+type TransferRouter struct {
+	controller *controllers.TransferController
 }
 
-func NewAccountRouter(b mediator.Bus, v *validator.Validate) *AccountsRouter {
-	controller := controllers.NewAccountController(b, v)
-	return &AccountsRouter{controller}
+func NewTransferRouter(b mediator.Bus, v *validator.Validate) *TransferRouter {
+	controller := controllers.NewTransferController(b, v)
+	return &TransferRouter{controller}
 }
 
-func (r *AccountsRouter) Init(router *mux.Router) {
-	var accountPath = "accounts"
-	router.HandleFunc(fmt.Sprintf("/%s", accountPath), r.controller.NewAccount).Methods(http.MethodPost)
+func (r *TransferRouter) Init(router *mux.Router) {
+	var transfersPath = "transfers"
+	router.HandleFunc(fmt.Sprintf("/%s", transfersPath), r.controller.MakeTransfer).Methods(http.MethodPost)
 }

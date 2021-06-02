@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
-	"github.com/rs/zerolog"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"github.com/sptGabriel/banking/app/presentation/controllers"
 	"net/http"
@@ -14,8 +13,8 @@ type AccountsRouter struct {
 	controller *controllers.AccountController
 }
 
-func NewAccountRouter(b mediator.Bus, v *validator.Validate, l *zerolog.Logger) *AccountsRouter {
-	controller := controllers.NewAccountController(b, v, l)
+func NewAccountRouter(b mediator.Bus, v *validator.Validate) *AccountsRouter {
+	controller := controllers.NewAccountController(b, v)
 	return &AccountsRouter{controller}
 }
 

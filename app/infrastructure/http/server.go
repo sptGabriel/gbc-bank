@@ -43,13 +43,20 @@ func RunServer(s *http.Server, log *zerolog.Logger) {
 }
 
 func InitBus(conn *pgxpool.Pool, bus *mediator.Bus) error {
+
 	// init repositories
+	transactionalRepo := postgres.NewTransactional(conn)
 	accountRepo := postgres.NewAccountRepository(conn)
+	transferRepo := postgres.NewTransferRepository(conn)
 	// init handlers
 	hasher := adapters.NewBCryptAdapter(10)
-	accountHandler := handlers.NewCreateAccountHandler(accountRepo, hasher)
+	newAccountHandler := handlers.NewCreateAccountHandler(accountRepo, hasher)
+	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepo,accountRepo, transactionalRepo)
 	// register handlers on the bus
-	if err := bus.RegisterHandler(commands.CreateAccountCommand{}, accountHandler); err != nil {
+	if err := bus.RegisterHandler(commands.CreateAccountCommand{}, newAccountHandler); err != nil {
+		return err
+	}
+	if err := bus.RegisterHandler(commands.MakeTransferCommand{}, makeTransferHandler); err != nil {
 		return err
 	}
 	return nil

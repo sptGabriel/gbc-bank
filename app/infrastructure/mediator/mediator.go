@@ -35,7 +35,7 @@ func (cb *Bus) RegisterHandler(c Command, ch Handler) error {
 	return nil
 }
 
-func (cb Bus) Publish(ctx context.Context,c Command) (interface{}, error) {
+func (cb Bus) Publish(ctx context.Context, c Command) (interface{}, error) {
 	cmdName := reflect.TypeOf(c)
 	ch, ok := cb.handlers[cmdName]
 	if !ok {
