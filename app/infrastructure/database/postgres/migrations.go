@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"embed"
+	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -37,6 +38,7 @@ func RunMigrations(dbURL string) error {
 	defer m.Close()
 
 	if err = m.Up(); err != nil && err != migrate.ErrNoChange {
+		fmt.Println(err)
 		return app.NewInternalError("failed to execute transactions", err)
 	}
 

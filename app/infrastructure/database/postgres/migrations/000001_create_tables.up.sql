@@ -1,22 +1,22 @@
 begin;
 
 CREATE TABLE accounts (
-    id              uuid primary key,
-    name            varchar(255) not null,
-    cpf             varchar(255) not null,
-    secret          varchar(255) not null,
-    balance 	    decimal not null,
-    created_at		timestamptz not null default (now()),
-    updated_at 		timestamptz not null default (now())
+    id              UUID PRIMARY KEY,
+    name            VARCHAR (255) NOT NULL,
+    cpf             VARCHAR (255) NOT NULL,
+    secret          VARCHAR (255) NOT NULL,
+    balance 	    DECIMAL NOT NULL,
+    created_at		timestamptz NOT NULL DEFAULT (now()),
+    updated_at 		timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE  transfers (
-    id                      uuid primary key,
-    account_origin_id       uuid references accounts,
-    account_destination_id  uuid references accounts,
-    amount 	                decimal not null,
-    created_at 		        timestamptz   not null default (now()),
-    updated_at 		        imestamptz    not null default (now())
+    id                      UUID PRIMARY KEY,
+    account_origin_id       UUID REFERENCES accounts (id),
+    account_destination_id  UUID REFERENCES accounts (id),
+    amount 	                DECIMAL NOT NULL,
+    created_at 		        timestamptz NOT NULL DEFAULT (now()),
+    updated_at 		        timestamptz NOT NULL DEFAULT (now())
 );
 
 commit;
