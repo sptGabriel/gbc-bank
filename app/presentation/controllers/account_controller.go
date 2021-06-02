@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator"
 	"github.com/rs/zerolog/hlog"
+	"github.com/sptGabriel/banking/app"
 	"github.com/sptGabriel/banking/app/application/dtos"
 	"github.com/sptGabriel/banking/app/domain/commands"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
-	"github.com/sptGabriel/banking/app/utils"
+	"github.com/sptGabriel/banking/app/presentation/responses"
 	"net/http"
 )
 
@@ -26,24 +27,24 @@ func (c AccountController) NewAccount(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.CreateAccountDTO
 
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		utils.JSONError(w, logger, err)
+		responses.Error(w, logger, app.NewMalformedJSONError())
 		return
 	}
 
 	if err := c.validator.Struct(dto); err != nil {
-		utils.JSONError(w, logger, err)
+		responses.Error(w, logger, err)
 		return
 	}
 
 	cmd := commands.NewCreateAccountCommand(dto.Secret, dto.CPF, dto.Name)
 
-	result, err := c.bus.Publish(logger.WithContext(r.Context()), cmd)
+	_, err := c.bus.Publish(logger.WithContext(r.Context()), cmd)
 	if err != nil {
-		utils.JSONError(w, logger, err)
+		responses.Error(w, logger, err)
 		return
 	}
 
-	utils.JSONResponse(w, logger, http.StatusCreated, result)
+	responses.JSON(w, logger, http.StatusCreated, nil)
 }
 
 func (c AccountController) Me(w http.ResponseWriter, r *http.Request) {
