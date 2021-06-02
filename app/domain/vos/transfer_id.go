@@ -2,12 +2,12 @@ package vos
 
 import "github.com/google/uuid"
 
-type AccountId uuid.UUID
+type TransferId uuid.UUID
 
-func NewAccountId() AccountId {
-	return AccountId(uuid.New())
+func NewTransferId() TransferId {
+	return TransferId(uuid.New())
 }
 
-func (accountId AccountId) String() string {
-	return uuid.UUID(accountId).String()
+func (id TransferId) String() string{
+	return uuid.UUID(id).String()
 }
