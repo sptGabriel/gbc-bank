@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-playground/validator"
-	"github.com/rs/zerolog/hlog"
 	"github.com/sptGabriel/banking/app/application/dtos"
 	"github.com/sptGabriel/banking/app/domain/commands"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
@@ -22,7 +21,6 @@ func NewAccountController(b mediator.Bus, v *validator.Validate) *AccountControl
 }
 
 func (c AccountController) NewAccount(r *http.Request) responses.Response {
-	logger := hlog.FromRequest(r)
 
 	var dto dtos.CreateAccountDTO
 
@@ -36,7 +34,7 @@ func (c AccountController) NewAccount(r *http.Request) responses.Response {
 
 	cmd := commands.NewCreateAccountCommand(dto.Secret, dto.CPF, dto.Name)
 
-	_, err := c.bus.Publish(logger.WithContext(r.Context()), cmd)
+	_, err := c.bus.Publish(context.Background(), cmd)
 	if err != nil {
 		return responses.IsError(err)
 	}
