@@ -127,7 +127,7 @@ func (r accountRepository) GetAccountBalance(ctx context.Context, accId vos.Acco
 }
 
 func (r accountRepository) GetAll(ctx context.Context) ([]entities.Account, error) {
-	var query = `select id, name, cpf, created_at from accounts`
+	var query = `select id, name, cpf, balance, created_at from accounts`
 
 	var accounts []entities.Account
 
@@ -138,20 +138,20 @@ func (r accountRepository) GetAll(ctx context.Context) ([]entities.Account, erro
 		}
 		return nil, err
 	}
-	defer rows.Close()
 
 	for rows.Next() {
 		var account entities.Account
+
 		err := rows.Scan(
 			&account.Id,
 			&account.Name,
 			&account.CPF,
-			&account.Secret,
 			&account.Balance,
 			&account.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
+
 		accounts = append(accounts, account)
 	}
 

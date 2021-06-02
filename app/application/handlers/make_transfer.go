@@ -9,7 +9,6 @@ import (
 	"github.com/sptGabriel/banking/app/domain/vos"
 	"github.com/sptGabriel/banking/app/infrastructure/database/postgres"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
-	"github.com/sptGabriel/banking/app/utils"
 	"time"
 )
 
@@ -36,11 +35,14 @@ func (h *MakeTransferHandler) Execute(ctx context.Context, cmd mediator.Command)
 		return nil, app.NewInternalError("invalid command", nil)
 	}
 
-	originAccountId := vos.AccountId(utils.ToUUID(command.AccountOriginId))
+	originAccountId := vos.AccountId(command.AccountOriginId)
 
-	destinationId := vos.AccountId(utils.ToUUID(command.AccountDestinationId))
+	destinationId := vos.AccountId(command.AccountDestinationId)
 
-	transfer := entities.NewTransfer(originAccountId, destinationId, command.Amount)
+	transfer, err := entities.NewTransfer(originAccountId, destinationId, command.Amount)
+	if err != nil {
+		return nil, err
+	}
 
 	res, err := h.transactional.Exec(ctx, func(txCtx context.Context) (interface{}, error) {
 		if err := h.debitOriginAccount(txCtx, originAccountId, transfer.Amount); err != nil {

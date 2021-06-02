@@ -51,12 +51,16 @@ func InitBus(conn *pgxpool.Pool, bus *mediator.Bus) error {
 	// init handlers
 	hasher := adapters.NewBCryptAdapter(10)
 	newAccountHandler := handlers.NewCreateAccountHandler(accountRepo, hasher)
-	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepo,accountRepo, transactionalRepo)
+	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepo, accountRepo, transactionalRepo)
+	getAccountsHandlers := handlers.NewGetAccountsHandler(accountRepo)
 	// register handlers on the bus
 	if err := bus.RegisterHandler(commands.CreateAccountCommand{}, newAccountHandler); err != nil {
 		return err
 	}
 	if err := bus.RegisterHandler(commands.MakeTransferCommand{}, makeTransferHandler); err != nil {
+		return err
+	}
+	if err := bus.RegisterHandler(commands.GetAllAccountsCommand{}, getAccountsHandlers); err != nil {
 		return err
 	}
 	return nil

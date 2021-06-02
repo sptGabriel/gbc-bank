@@ -2,6 +2,7 @@ package vos
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"github.com/sptGabriel/banking/app"
 	"github.com/sptGabriel/banking/app/utils"
@@ -46,4 +47,9 @@ func (n *Name) Scan(v interface{}) error {
 	}
 
 	return errors.New("unable to assign row value to Name")
+}
+
+func (n *Name) MarshalJSON() ([]byte, error) {
+	byteString, err := json.Marshal(n.String())
+	return byteString, err
 }

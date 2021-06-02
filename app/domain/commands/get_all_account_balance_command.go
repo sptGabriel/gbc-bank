@@ -1,4 +1,7 @@
 package commands
 
-type GetAllAccountsCommand struct {
+import "github.com/sptGabriel/banking/app/domain/vos"
+
+type GetAllAccountBalanceCommand struct {
+	Id vos.AccountId
 }

@@ -67,3 +67,4 @@ func (ac *CreateAccountHandler) Execute(ctx context.Context, cmd mediator.Comman
 
 	return nil, nil
 }
+

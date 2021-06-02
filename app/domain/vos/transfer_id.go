@@ -8,6 +8,6 @@ func NewTransferId() TransferId {
 	return TransferId(uuid.New())
 }
 
-func (id TransferId) String() string{
+func (id TransferId) String() string {
 	return uuid.UUID(id).String()
 }

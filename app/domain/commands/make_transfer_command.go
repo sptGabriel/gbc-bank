@@ -1,12 +1,14 @@
 package commands
 
+import "github.com/google/uuid"
+
 type MakeTransferCommand struct {
-	AccountOriginId      string
-	AccountDestinationId string
+	AccountOriginId      uuid.UUID
+	AccountDestinationId uuid.UUID
 	Amount               int
 }
 
-func NewMakeTransferCommand(accountOriginId string, accountDestinationId string, amount int) MakeTransferCommand {
+func NewMakeTransferCommand(accountOriginId uuid.UUID, accountDestinationId uuid.UUID, amount int) MakeTransferCommand {
 	return MakeTransferCommand{
 		AccountOriginId:      accountOriginId,
 		AccountDestinationId: accountDestinationId,

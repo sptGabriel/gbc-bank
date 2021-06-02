@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/go-playground/validator"
 	"github.com/rs/zerolog/hlog"
-	"github.com/sptGabriel/banking/app"
 	"github.com/sptGabriel/banking/app/application/dtos"
 	"github.com/sptGabriel/banking/app/domain/commands"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
@@ -21,36 +21,34 @@ func NewAccountController(b mediator.Bus, v *validator.Validate) *AccountControl
 	return &AccountController{bus: b, validator: v}
 }
 
-func (c AccountController) NewAccount(w http.ResponseWriter, r *http.Request) {
+func (c AccountController) NewAccount(r *http.Request) responses.Response {
 	logger := hlog.FromRequest(r)
 
 	var dto dtos.CreateAccountDTO
 
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		responses.Error(w, logger, app.NewMalformedJSONError())
-		return
+		return responses.IsError(err)
 	}
 
 	if err := c.validator.Struct(dto); err != nil {
-		responses.Error(w, logger, err)
-		return
+		return responses.IsError(err)
 	}
 
 	cmd := commands.NewCreateAccountCommand(dto.Secret, dto.CPF, dto.Name)
 
 	_, err := c.bus.Publish(logger.WithContext(r.Context()), cmd)
 	if err != nil {
-		responses.Error(w, logger, err)
-		return
+		return responses.IsError(err)
 	}
 
-	responses.JSON(w, logger, http.StatusCreated, nil)
+	return responses.OK(nil)
 }
 
-func (c AccountController) Me(w http.ResponseWriter, r *http.Request) {
+func (c AccountController) GetAccounts(r *http.Request) responses.Response {
+	accounts, err := c.bus.Publish(context.Background(), commands.GetAllAccountsCommand{})
+	if err != nil {
+		return responses.IsError(err)
+	}
 
-}
-
-func (c AccountController) UpdateBalance(w http.ResponseWriter, r *http.Request) {
-
+	return responses.OK(accounts)
 }

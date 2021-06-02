@@ -9,23 +9,24 @@ import (
 	"time"
 )
 
-type GetAccountsHandler struct {
+type GetAccountBalanceHandler struct {
 	repository repositories.AccountRepository
 }
 
-func NewGetAccountsHandler(repository repositories.AccountRepository) *GetAccountsHandler {
-	return &GetAccountsHandler{repository}
+func NewGetAccountBalanceHandler(repository repositories.AccountRepository) *GetAccountBalanceHandler {
+	return &GetAccountBalanceHandler{repository}
 }
 
-func (ac *GetAccountsHandler) Execute(ctx context.Context, cmd mediator.Command) (interface{}, error) {
+func (ac *GetAccountBalanceHandler) Execute(ctx context.Context, cmd mediator.Command) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	if _, ok := cmd.(commands.GetAllAccountsCommand); !ok {
+	command, ok := cmd.(commands.GetAllAccountBalanceCommand)
+	if !ok {
 		return nil, app.NewInternalError("invalid command", nil)
 	}
 
-	accounts, err := ac.repository.GetAll(ctx)
+	account, err := ac.repository.GetByID(ctx, command.Id)
 
-	return accounts, err
+	return account, err
 }
