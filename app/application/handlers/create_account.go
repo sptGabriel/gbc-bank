@@ -57,7 +57,7 @@ func (ac *CreateAccountHandler) Execute(ctx context.Context, cmd mediator.Comman
 		return nil, err
 	}
 	if hasAccount {
-		return nil, err
+		return nil, app.NewConflictError("account")
 	}
 
 	account := entities.NewAccount(name, cpf, secret)
