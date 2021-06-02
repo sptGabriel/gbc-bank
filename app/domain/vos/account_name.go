@@ -1,6 +1,8 @@
 package vos
 
 import (
+	"database/sql/driver"
+	"errors"
 	"github.com/sptGabriel/banking/app"
 	"github.com/sptGabriel/banking/app/utils"
 	"strings"
@@ -24,6 +26,24 @@ func NewName(name string) (Name, error) {
 	return Name{value: name}, nil
 }
 
-func (name Name) String() string {
-	return name.value
+func (n Name) String() string {
+	return n.value
+}
+
+func (n Name) Value() (driver.Value, error) {
+	return n.String(), nil
+}
+
+func (n *Name) Scan(v interface{}) error {
+	if v == nil {
+		*n = Name(Name{})
+		return nil
+	}
+
+	if value, ok := v.(string); ok {
+		*n = Name(Name{value})
+		return nil
+	}
+
+	return errors.New("unable to assign row value to Name")
 }

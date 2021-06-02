@@ -8,6 +8,6 @@ func NewAccountId() AccountId {
 	return AccountId(uuid.New())
 }
 
-func (accountId AccountId) String() string {
-	return uuid.UUID(accountId).String()
+func (id AccountId) String() string{
+	return uuid.UUID(id).String()
 }

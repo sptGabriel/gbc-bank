@@ -1,6 +1,8 @@
 package vos
 
 import (
+	"database/sql/driver"
+	"errors"
 	"github.com/sptGabriel/banking/app"
 )
 
@@ -19,6 +21,24 @@ func NewSecret(secret string) (Secret, error) {
 	return Secret{value: secret}, nil
 }
 
-func (secret Secret) String() string {
-	return secret.value
+func (s Secret) String() string {
+	return s.value
+}
+
+func (s Secret) Value() (driver.Value, error) {
+	return s.String(), nil
+}
+
+func (s *Secret) Scan(v interface{}) error {
+	if v == nil {
+		*s = Secret(Secret{})
+		return nil
+	}
+
+	if value, ok := v.(string); ok {
+		*s = Secret(Secret{value})
+		return nil
+	}
+
+	return errors.New("unable to assign row value to Secret")
 }

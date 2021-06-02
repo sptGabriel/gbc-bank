@@ -1,7 +1,9 @@
 package entities
 
 import (
+	"github.com/sptGabriel/banking/app"
 	"github.com/sptGabriel/banking/app/domain/vos"
+	"math"
 	"time"
 )
 
@@ -26,6 +28,22 @@ func NewAccount(name vos.Name, cpf vos.CPF, secret vos.Secret) Account {
 	}
 }
 
-func (account Account) IsEmpty() bool {
-	return account == Account{}
+func (acc Account) IsEmpty() bool {
+	return acc == Account{}
+}
+
+func (acc *Account) DebitAmount(amount int) error {
+	if acc.Balance-amount < 0 {
+		return app.NewMalformedJSONError()
+	}
+	acc.Balance -= amount
+	return nil
+}
+
+func (acc *Account) CreditAmount(amount int) error {
+	if math.Signbit(float64(amount)) || amount == 0 {
+		return app.NewMalformedJSONError()
+	}
+	acc.Balance += amount
+	return nil
 }
