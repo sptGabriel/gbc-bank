@@ -35,8 +35,12 @@ func main() {
 
 	validator := validator.New()
 	router := mux.NewRouter()
-	accRoute := routes.NewAccountRouter(bus, validator, logger)
+
+	accRoute := routes.NewAccountRouter(bus, validator)
 	accRoute.Init(router)
+
+	transferRoute := routes.NewTransferRouter(bus, validator)
+	transferRoute.Init(router)
 
 	s := &http.Server{
 		Handler:      router,
