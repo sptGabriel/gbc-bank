@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"github.com/sptGabriel/banking/app"
+	"github.com/sptGabriel/banking/app/application/schemas"
 	"github.com/sptGabriel/banking/app/domain/commands"
 	"github.com/sptGabriel/banking/app/domain/repositories"
+	"github.com/sptGabriel/banking/app/domain/vos"
 
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"time"
@@ -20,24 +22,24 @@ func NewGetAccountBalanceHandler(repository repositories.AccountRepository) *get
 }
 
 func (h *getAccountBalanceHandler) Execute(ctx context.Context, cmd mediator.Command) (interface{}, error) {
-	operation := "Handlers.GetAccount"
+	operation := "Handlers.GetAccountBalance"
 
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	command, ok := cmd.(commands.GetAllAccountBalanceCommand)
+	command, ok := cmd.(commands.GetBalanceCommand)
 	if !ok {
 		return nil, app.Err(operation, errors.New("invalid transfer command"))
 	}
 
-	account, err := h.repository.GetByID(ctx, command.Id)
+	account, err := h.repository.GetByID(ctx, vos.AccountId(command.Id))
 	if err != nil {
 		return nil, err
 	}
 
-	return account, err
+	return schemas.NewAccountBalanceSchema(account.Id, account.Balance), err
 }
 
 func (h *getAccountBalanceHandler) Init(bus mediator.Bus) error {
-	return bus.RegisterHandler(commands.GetAllAccountBalanceCommand{}, h)
+	return bus.RegisterHandler(commands.GetBalanceCommand{}, h)
 }

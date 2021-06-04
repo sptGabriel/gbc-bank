@@ -3,8 +3,10 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/sptGabriel/banking/app/application/dtos"
 	"github.com/sptGabriel/banking/app/domain/commands"
+	"github.com/sptGabriel/banking/app/utils"
 
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"github.com/sptGabriel/banking/app/presentation/responses"
@@ -18,6 +20,7 @@ type accountController struct {
 type AccountController interface {
 	NewAccount(r *http.Request) responses.Response
 	GetAccounts(r *http.Request) responses.Response
+	GetBalance(r *http.Request) responses.Response
 }
 
 func NewAccountController(b mediator.Bus) *accountController {
@@ -48,4 +51,19 @@ func (c accountController) GetAccounts(r *http.Request) responses.Response {
 	}
 
 	return responses.OK(accounts)
+}
+
+func (c accountController) GetBalance(r *http.Request) responses.Response {
+	params := mux.Vars(r)
+
+	accountId := utils.ToUUID(params["account_id"])
+
+	cmd := commands.NewGetBalanceCommand(accountId)
+
+	res, err := c.bus.Publish(context.Background(), cmd)
+	if err != nil {
+		return responses.IsError(err)
+	}
+
+	return responses.OK(res)
 }

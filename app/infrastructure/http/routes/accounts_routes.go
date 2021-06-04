@@ -13,12 +13,13 @@ type accountsRouter struct {
 }
 
 func NewAccountRoute(ctrl controllers.AccountController) *accountsRouter {
-	//controller := controllers.NewAccountController(b, v)
 	return &accountsRouter{ctrl}
 }
 
 func (r *accountsRouter) Init(router *mux.Router) {
-	var accountPath = "accounts"
-	router.HandleFunc(fmt.Sprintf("/%s", accountPath), middlewares.Handle(r.ctrl.GetAccounts)).Methods(http.MethodGet)
-	router.HandleFunc(fmt.Sprintf("/%s", accountPath), middlewares.Handle(r.ctrl.NewAccount)).Methods(http.MethodPost)
+	var accountPath = "/accounts"
+	var balancePath = fmt.Sprintf("%s/{account_id}/balance", accountPath)
+	router.HandleFunc(accountPath, middlewares.Handle(r.ctrl.GetAccounts)).Methods(http.MethodGet)
+	router.HandleFunc(accountPath, middlewares.Handle(r.ctrl.NewAccount)).Methods(http.MethodPost)
+	router.HandleFunc(balancePath, middlewares.Handle(r.ctrl.GetBalance)).Methods(http.MethodGet)
 }
