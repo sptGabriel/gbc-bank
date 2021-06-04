@@ -7,6 +7,8 @@ import (
 
 var (
 	ErrInternal                = errors.New("internal error")
+	ErrUnauthorized            = errors.New("unauthorized error")
+	ErrMalformedToken          = errors.New("token is not valid")
 	ErrAccountAlreadyExists    = errors.New("account already exists")
 	ErrBalanceUpdate           = errors.New("could not update balance from account")
 	ErrAccountNotFound         = errors.New("account not found")
