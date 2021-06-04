@@ -20,4 +20,5 @@ func NewTransferRouter(ctrl controllers.TransferController, cipherService ports.
 func (r *transferRouter) Init(router *mux.Router) {
 	var path = "/transfers"
 	router.HandleFunc(path, md.AuthHandle(r.cipherService, md.Handle(r.ctrl.MakeTransfer))).Methods(http.MethodPost)
+	router.HandleFunc(path, md.AuthHandle(r.cipherService, md.Handle(r.ctrl.GetAccountTransfers))).Methods(http.MethodGet)
 }

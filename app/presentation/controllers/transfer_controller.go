@@ -5,7 +5,6 @@ import (
 	"github.com/rs/zerolog/hlog"
 	"github.com/sptGabriel/banking/app/application/dtos"
 	"github.com/sptGabriel/banking/app/domain/commands"
-
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"github.com/sptGabriel/banking/app/presentation/responses"
 	"github.com/sptGabriel/banking/app/utils"
@@ -18,6 +17,7 @@ type transferController struct {
 
 type TransferController interface {
 	MakeTransfer(r *http.Request) responses.Response
+	GetAccountTransfers (r *http.Request) responses.Response
 }
 
 func NewTransferController(b mediator.Bus) *transferController {
@@ -44,4 +44,18 @@ func (c transferController) MakeTransfer(r *http.Request) responses.Response {
 	}
 
 	return responses.OK(nil)
+}
+
+func (c transferController) GetAccountTransfers(r *http.Request) responses.Response {
+	logger := hlog.FromRequest(r)
+
+	accountId := utils.ToUUID(r.Context().Value("acc_cl").(string))
+	cmd := commands.NewGetAccountTransfersCommand(accountId)
+
+	res, err := c.bus.Publish(logger.WithContext(r.Context()), cmd)
+	if err != nil {
+		return responses.IsError(err)
+	}
+
+	return responses.OK(res)
 }
