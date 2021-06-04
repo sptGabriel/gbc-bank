@@ -46,12 +46,23 @@ func main() {
 
 	// init handlers
 	newAccountHandler := handlers.NewCreateAccountHandler(accountRepository, bcryptAdapter)
-	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepository, accountRepository, transactional)
 	getAccountsHandler := handlers.NewGetAccountsHandler(accountRepository)
+	getBalanceHandler := handlers.NewGetAccountBalanceHandler(accountRepository)
+	getAccountTransfers := handlers.NewGetAccountTransferHandler(transferRepository)
+	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepository, accountRepository, transactional)
 	signinHandler:= handlers.NewSignInHandler(accountRepository, jwtAdapter, bcryptAdapter)
 
+
 	// init command bus
-	bus := initBus(logger, newAccountHandler, makeTransferHandler, getAccountsHandler, signinHandler)
+	bus := initBus(
+		logger,
+		newAccountHandler,
+		makeTransferHandler,
+		getAccountsHandler,
+		signinHandler,
+		getBalanceHandler,
+		getAccountTransfers,
+	)
 
 	// init controllers
 	accountController := controllers.NewAccountController(bus)
@@ -64,7 +75,12 @@ func main() {
 	transferRoute := routes.NewTransferRouter(transferController, jwtAdapter)
 
 	// router
-	router := initRouter(transferRoute, accRoute, accRoute, authRoute)
+	router := initRouter(
+		transferRoute,
+		accRoute,
+		accRoute,
+		authRoute,
+	)
 
 	//	create http server instance
 	s := &http.Server{
