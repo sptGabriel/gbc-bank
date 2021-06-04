@@ -43,7 +43,7 @@ func (c *CPF) Scan(v interface{}) error {
 	return errors.New("unable to assign row value to CPF")
 }
 
-func (c *CPF) MarshalJSON() ([]byte, error) {
+func (c CPF) MarshalJSON() ([]byte, error) {
 	byteString, err := json.Marshal(c.String())
 	return byteString, err
 }

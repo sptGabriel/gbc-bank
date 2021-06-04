@@ -19,7 +19,7 @@ func (id AccountId) Equals(accId AccountId) bool {
 	return id.String() == accId.String()
 }
 
-func (id *AccountId) MarshalJSON() ([]byte, error) {
+func (id AccountId) MarshalJSON() ([]byte, error) {
 	byteString, err := json.Marshal(id.String())
 	return byteString, err
 }
