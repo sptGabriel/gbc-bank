@@ -18,11 +18,9 @@ const (
 	maxNameLength = 30
 )
 
-var ErrAccountNameInvalid = app.NewDomainError("invalid name")
-
 func NewName(name string) (Name, error) {
 	if name == "" || !utils.InRange(minNameLength, maxNameLength, len(strings.TrimSpace(name))) {
-		return Name{}, ErrAccountNameInvalid
+		return Name{}, app.ErrInvalidAccountName
 	}
 	return Name{value: name}, nil
 }

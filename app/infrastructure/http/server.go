@@ -3,13 +3,7 @@ package http
 import (
 	"context"
 	"errors"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/rs/zerolog"
-	"github.com/sptGabriel/banking/app/application/handlers"
-	"github.com/sptGabriel/banking/app/common/adapters"
-	"github.com/sptGabriel/banking/app/domain/commands"
-	"github.com/sptGabriel/banking/app/infrastructure/database/postgres"
-	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"net/http"
 	"os"
 	"os/signal"
@@ -40,28 +34,4 @@ func RunServer(s *http.Server, log *zerolog.Logger) {
 	if !errors.Is(err, http.ErrServerClosed) {
 		log.Error().Err(err)
 	}
-}
-
-func InitBus(conn *pgxpool.Pool, bus *mediator.Bus) error {
-
-	// init repositories
-	transactionalRepo := postgres.NewTransactional(conn)
-	accountRepo := postgres.NewAccountRepository(conn)
-	transferRepo := postgres.NewTransferRepository(conn)
-	// init handlers
-	hasher := adapters.NewBCryptAdapter(10)
-	newAccountHandler := handlers.NewCreateAccountHandler(accountRepo, hasher)
-	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepo, accountRepo, transactionalRepo)
-	getAccountsHandlers := handlers.NewGetAccountsHandler(accountRepo)
-	// register handlers on the bus
-	if err := bus.RegisterHandler(commands.CreateAccountCommand{}, newAccountHandler); err != nil {
-		return err
-	}
-	if err := bus.RegisterHandler(commands.MakeTransferCommand{}, makeTransferHandler); err != nil {
-		return err
-	}
-	if err := bus.RegisterHandler(commands.GetAllAccountsCommand{}, getAccountsHandlers); err != nil {
-		return err
-	}
-	return nil
 }

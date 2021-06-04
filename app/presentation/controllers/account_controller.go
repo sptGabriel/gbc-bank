@@ -3,32 +3,31 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-playground/validator"
 	"github.com/sptGabriel/banking/app/application/dtos"
 	"github.com/sptGabriel/banking/app/domain/commands"
+
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"github.com/sptGabriel/banking/app/presentation/responses"
 	"net/http"
 )
 
-type AccountController struct {
+type accountController struct {
 	bus       mediator.Bus
-	validator *validator.Validate
 }
 
-func NewAccountController(b mediator.Bus, v *validator.Validate) *AccountController {
-	return &AccountController{bus: b, validator: v}
+type AccountController interface {
+	NewAccount(r *http.Request) responses.Response
+	GetAccounts(r *http.Request) responses.Response
 }
 
-func (c AccountController) NewAccount(r *http.Request) responses.Response {
+func NewAccountController(b mediator.Bus) *accountController {
+	return &accountController{bus: b}
+}
 
+func (c accountController) NewAccount(r *http.Request) responses.Response {
 	var dto dtos.CreateAccountDTO
 
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		return responses.IsError(err)
-	}
-
-	if err := c.validator.Struct(dto); err != nil {
 		return responses.IsError(err)
 	}
 
@@ -42,7 +41,7 @@ func (c AccountController) NewAccount(r *http.Request) responses.Response {
 	return responses.OK(nil)
 }
 
-func (c AccountController) GetAccounts(r *http.Request) responses.Response {
+func (c accountController) GetAccounts(r *http.Request) responses.Response {
 	accounts, err := c.bus.Publish(context.Background(), commands.GetAllAccountsCommand{})
 	if err != nil {
 		return responses.IsError(err)

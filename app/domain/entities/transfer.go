@@ -16,7 +16,7 @@ type Transfer struct {
 
 func NewTransfer(accountOriginId vos.AccountId, accountDestinationId vos.AccountId, amount int) (Transfer, error) {
 	if accountOriginId.Equals(accountDestinationId) {
-		return Transfer{}, app.NewDomainError("the origin account cannot be the same as the destination account")
+		return Transfer{}, app.ErrSELFTransfer
 	}
 	return Transfer{
 		Id:                   vos.NewTransferId(),

@@ -1,24 +1,23 @@
 package routes
 
 import (
-	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
-	"github.com/sptGabriel/banking/app/infrastructure/http/middlewares"
-	"github.com/sptGabriel/banking/app/infrastructure/mediator"
+	"github.com/sptGabriel/banking/app/application/ports"
+	md "github.com/sptGabriel/banking/app/infrastructure/http/middlewares"
 	"github.com/sptGabriel/banking/app/presentation/controllers"
 	"net/http"
 )
 
-type TransferRouter struct {
-	ctrl *controllers.TransferController
+type transferRouter struct {
+	ctrl       controllers.TransferController
+	cipherService ports.CipherService
 }
 
-func NewTransferRouter(b mediator.Bus, v *validator.Validate) *TransferRouter {
-	controller := controllers.NewTransferController(b, v)
-	return &TransferRouter{controller}
+func NewTransferRouter(ctrl controllers.TransferController, cipherService ports.CipherService) *transferRouter {
+	return &transferRouter{ctrl, cipherService}
 }
 
-func (r *TransferRouter) Init(router *mux.Router) {
-	var transfersPath = "/transfers"
-	router.HandleFunc(transfersPath, middlewares.Handle(r.ctrl.MakeTransfer)).Methods(http.MethodPost)
+func (r *transferRouter) Init(router *mux.Router) {
+	var path = "/transfers"
+	router.HandleFunc(path, md.AuthHandle(r.cipherService, md.Handle(r.ctrl.MakeTransfer))).Methods(http.MethodPost)
 }

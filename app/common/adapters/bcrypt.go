@@ -2,29 +2,38 @@ package adapters
 
 import (
 	"github.com/sptGabriel/banking/app"
-	"github.com/sptGabriel/banking/app/domain/vos"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type BCryptAdapter struct {
+type bCryptAdapter struct {
 	salt int
 }
 
-func NewBCryptAdapter(salt int) BCryptAdapter {
-	return BCryptAdapter{
+func NewBCryptAdapter(salt int) bCryptAdapter {
+	return bCryptAdapter{
 		salt: salt,
 	}
 }
 
-func (bc BCryptAdapter) Hash(plainText *string) error {
+func (bc bCryptAdapter) Hash(plainText *string) error {
+	operation := "Adapters.BCrypt.Hash"
+
 	hashed, err := bcrypt.GenerateFromPassword([]byte(*plainText), bcrypt.DefaultCost)
 	if err != nil {
-		return app.NewInternalError("failed to hash password", err)
+		return app.Err(operation, err)
 	}
 	*plainText = string(hashed)
 	return nil
 }
 
-func (bc BCryptAdapter) Compare(secret vos.Secret, plainSecret string) error {
-	return bcrypt.CompareHashAndPassword([]byte(secret.String()), []byte(plainSecret))
+func (bc bCryptAdapter) Compare(hashedPassword []byte, password []byte) error {
+	operation := "Adapters.BCrypt.Compare"
+
+	err := bcrypt.CompareHashAndPassword(hashedPassword, password)
+
+	if err == nil {
+		return nil
+	}
+
+	return app.Err(operation, err)
 }

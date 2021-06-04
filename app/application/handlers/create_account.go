@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"github.com/sptGabriel/banking/app"
 	"github.com/sptGabriel/banking/app/application/ports"
 	"github.com/sptGabriel/banking/app/domain/commands"
@@ -12,25 +13,27 @@ import (
 	"time"
 )
 
-type CreateAccountHandler struct {
+type createAccountHandler struct {
 	repository repositories.AccountRepository
-	hasher     ports.Hasher
+	hasher     ports.HashService
 }
 
-func NewCreateAccountHandler(r repositories.AccountRepository, h ports.Hasher) *CreateAccountHandler {
-	return &CreateAccountHandler{
+func NewCreateAccountHandler(r repositories.AccountRepository, h ports.HashService) *createAccountHandler {
+	return &createAccountHandler{
 		repository: r,
 		hasher:     h,
 	}
 }
 
-func (ac *CreateAccountHandler) Execute(ctx context.Context, cmd mediator.Command) (interface{}, error) {
+func (ac *createAccountHandler) Execute(ctx context.Context, cmd mediator.Command) (interface{}, error) {
+	operation := "Handlers.CreateAccount"
+
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	command, ok := cmd.(commands.CreateAccountCommand)
 	if !ok {
-		return nil, app.NewInternalError("invalid command", nil)
+		return nil, app.Err(operation, errors.New("invalid transfer command"))
 	}
 
 	name, err := vos.NewName(command.Name)
@@ -52,19 +55,20 @@ func (ac *CreateAccountHandler) Execute(ctx context.Context, cmd mediator.Comman
 		return nil, err
 	}
 
-	hasAccount, err := ac.repository.DoesAccountExistByCPF(ctx, cpf)
+	hasAccount, err := ac.repository.DoesExistByCPF(ctx, cpf)
 	if err != nil {
 		return nil, err
 	}
 	if hasAccount {
-		return nil, app.NewConflictError("account")
+		return nil, app.ErrAccountAlreadyExists
 	}
 
 	account := entities.NewAccount(name, cpf, secret)
-	if err = ac.repository.Create(ctx, &account); err != nil {
-		return nil, err
-	}
+	err = ac.repository.Create(ctx, &account)
 
-	return nil, nil
+	return nil, err
 }
 
+func (ac createAccountHandler) Init(bus mediator.Bus) error {
+	return bus.RegisterHandler(commands.CreateAccountCommand{}, &ac)
+}

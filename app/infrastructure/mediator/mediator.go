@@ -18,15 +18,20 @@ type Handler interface {
 	Execute(ctx context.Context, command Command) (interface{}, error)
 }
 
-type Bus struct {
+type bus struct {
 	handlers map[reflect.Type]Handler
 }
 
-func NewBus() Bus {
-	return Bus{handlers: make(map[reflect.Type]Handler)}
+type Bus interface {
+	RegisterHandler(c Command, ch Handler) error
+	Publish(ctx context.Context, c Command) (interface{}, error)
 }
 
-func (cb *Bus) RegisterHandler(c Command, ch Handler) error {
+func NewBus() *bus {
+	return &bus{handlers: make(map[reflect.Type]Handler)}
+}
+
+func (cb *bus) RegisterHandler(c Command, ch Handler) error {
 	cmdName := reflect.TypeOf(c)
 	if _, has := cb.handlers[cmdName]; has {
 		return ErrCommandAlreadyRegistered
@@ -35,7 +40,7 @@ func (cb *Bus) RegisterHandler(c Command, ch Handler) error {
 	return nil
 }
 
-func (cb Bus) Publish(ctx context.Context, c Command) (interface{}, error) {
+func (cb bus) Publish(ctx context.Context, c Command) (interface{}, error) {
 	cmdName := reflect.TypeOf(c)
 	ch, ok := cb.handlers[cmdName]
 	if !ok {

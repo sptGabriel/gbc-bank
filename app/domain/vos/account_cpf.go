@@ -13,11 +13,10 @@ type CPF struct {
 	value string
 }
 
-var ErrAccountCpfInvalid = app.NewDomainError("invalid cpf")
 
 func NewCpf(cpf string) (CPF, error) {
 	if cpf := brdoc.IsCPF(cpf); !cpf {
-		return CPF{}, ErrAccountCpfInvalid
+		return CPF{}, app.ErrInvalidAccountCPF
 	}
 	return CPF{utils.Clean(cpf)}, nil
 }

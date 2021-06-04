@@ -15,31 +15,34 @@ import (
 var _migrations embed.FS
 
 func GetMigrationHandler(dbURL string) (*migrate.Migrate, error) {
+	operation:= "Postgres.GetMigrationHandler"
 	// use httpFS until go-migrate implements ioFS
 	// (see https://github.com/golang-migrate/migrate/issues/480#issuecomment-731518493)
 	source, err := httpfs.New(http.FS(_migrations), "migrations")
 	if err != nil {
-		return nil, app.NewInternalError("failed to init httpfs", err)
+		return nil, app.Err(operation, err)
 	}
 
 	m, err := migrate.NewWithSourceInstance("httpfs", source, dbURL)
 	if err != nil {
-		return nil, app.NewInternalError("failed to get migration source", err)
+		return nil, app.Err(operation, err)
 	}
 
 	return m, nil
 }
 
 func RunMigrations(dbURL string) error {
+	operation:= "Postgres.RunMigrations"
+
 	m, err := GetMigrationHandler(dbURL)
 	if err != nil {
-		return app.NewInternalError("failed to get migration handler", err)
+		return app.Err(operation, err)
 	}
 	defer m.Close()
 
 	if err = m.Up(); err != nil && err != migrate.ErrNoChange {
 		fmt.Println(err)
-		return app.NewInternalError("failed to execute transactions", err)
+		return app.Err(operation, err)
 	}
 
 	return nil

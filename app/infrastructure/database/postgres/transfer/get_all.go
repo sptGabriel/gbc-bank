@@ -1,42 +1,13 @@
-package postgres
+package transfer
 
 import (
 	"context"
 	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sptGabriel/banking/app/domain/entities"
-	"github.com/sptGabriel/banking/app/domain/repositories"
 	"github.com/sptGabriel/banking/app/domain/vos"
 )
 
-type transferRepository struct {
-	conn *pgxpool.Pool
-}
-
-func NewTransferRepository(c *pgxpool.Pool) repositories.TransferRepository {
-	return &transferRepository{c}
-}
-
-func (r transferRepository) Create(ctx context.Context, transfer *entities.Transfer) error {
-	var query = `
-		INSERT INTO
-			transfers (id, account_origin_id, account_destination_id, amount)
-		VALUES
-			($1, $2, $3, $4)
-	`
-	if _, err := getConnFromCtx(ctx, r.conn).Exec(ctx, query,
-		transfer.Id,
-		transfer.AccountOriginId,
-		transfer.AccountDestinationId,
-		transfer.Amount,
-	); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r transferRepository) GetAll(ctx context.Context, accountId vos.AccountId) ([]entities.Transfer, error) {
+func (r Repository) GetAll(ctx context.Context, accountId vos.AccountId) ([]entities.Transfer, error) {
 	var query = `
 		SELECT
 			id, account_origin_id, account_destination_id, amount, created_at
@@ -46,7 +17,7 @@ func (r transferRepository) GetAll(ctx context.Context, accountId vos.AccountId)
 	`
 	var transfers []entities.Transfer
 
-	rows, err := r.conn.Query(ctx, query, accountId)
+	rows, err := r.pool.Query(ctx, query, accountId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return transfers, nil

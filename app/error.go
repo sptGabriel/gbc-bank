@@ -1,98 +1,46 @@
 package app
 
-type group string
-
-const (
-	domain   group = "domain"
-	internal group = "internal"
+import (
+	"errors"
+	"fmt"
 )
 
-type Error struct {
-	group   group
-	code    int
-	message string
-	parent  error
+var (
+	ErrInternal                = errors.New("internal error")
+	ErrAccountAlreadyExists    = errors.New("account already exists")
+	ErrBalanceUpdate           = errors.New("could not update balance from account")
+	ErrAccountNotFound         = errors.New("account not found")
+	ErrInvalidAccountID        = errors.New("account id not valid")
+	ErrInvalidAccountName      = errors.New("account name not valid")
+	ErrInvalidAccountSecret    = errors.New("account secret not valid")
+	ErrInvalidAccountCPF       = errors.New("account cpf not valid")
+	ErrInsufficientBalance     = errors.New("account has insufficient balance")
+	ErrInvalidAmount           = errors.New("could not credit this amount")
+	ErrTransferNotFound        = errors.New("transfer not found")
+	ErrAccountTransferNotFound = errors.New("account has no transfers")
+	ErrSELFTransfer            = errors.New("origin account cannot be the same as the destination account")
+)
+
+type DomainError struct {
+	op     string
+	err    error
+	parent *DomainError
 }
 
-func (e Error) Error() string {
-	return e.message
-}
-
-func (e Error) Parent() error {
-	return e.parent
-}
-
-func (e Error) IsDomain() bool {
-	return e.group == "domain"
-}
-
-func (e Error) IsInternal() bool {
-	return e.group == "internal"
-}
-
-func (e Error) Code() int {
-	if e.code != 0 {
-		return e.code
-	}
-	return 500
-}
-
-func GetErrorCode(err error) int {
-	e, ok := err.(*Error)
-	if !ok {
-		return 500
-	}
-	if e.code != 0 {
-		return e.code
+func Err(op string, err error) *DomainError {
+	if err == nil {
+		return nil
 	}
 
-	return GetErrorCode(e.parent)
-}
-func NewDomainError(m string) error {
-	return &Error{
-		group:   domain,
-		message: m,
-		code:    400,
+	domainError := DomainError{op: op, err: err}
+
+	if error, ok := err.(*DomainError); ok {
+		error.parent = &domainError
 	}
+
+	return &domainError
 }
 
-func NewInternalError(m string, p error) error {
-	return &Error{
-		group:   internal,
-		message: m,
-		parent:  p,
-		code:    500,
-	}
-}
-
-func NewConflictError(e string) error {
-	entity := ""
-	if e != "" {
-		entity = e + " "
-	}
-	return &Error{
-		group:   domain,
-		code:    409,
-		message: entity + "already exists",
-	}
-}
-
-func NewNotFoundError(e string) error {
-	entity := ""
-	if e != "" {
-		entity = e + " "
-	}
-	return &Error{
-		group:   domain,
-		code:    404,
-		message: entity + "not found",
-	}
-}
-
-func NewMalformedJSONError() error {
-	return &Error{
-		group:   domain,
-		code:    400,
-		message: "The request cannot be fulfilled due to bad syntax",
-	}
+func (e DomainError) Error() string {
+	return fmt.Sprintf(e.err.Error())
 }

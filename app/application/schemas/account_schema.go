@@ -7,11 +7,11 @@ import (
 )
 
 type AccountSchema struct {
-	Id        vos.AccountId    `json:"id"`
-	Name      vos.Name    `json:"name"`
-	CPF       vos.CPF    `json:"cpf"`
-	Balance   int   `json:"balance"`
-	CreatedAt time.Time `json:"created_at"`
+	Id        vos.AccountId `json:"id"`
+	Name      vos.Name      `json:"name"`
+	CPF       vos.CPF       `json:"cpf"`
+	Balance   int           `json:"balance"`
+	CreatedAt time.Time     `json:"created_at"`
 }
 
 func NewAccountSchema(account entities.Account) AccountSchema {

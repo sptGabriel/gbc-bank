@@ -5,7 +5,3 @@ type Response struct {
 	Error  error
 	Data   interface{}
 }
-
-type Error struct {
-	Message string `json:"Message"`
-}

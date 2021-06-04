@@ -12,6 +12,7 @@ import (
 type Config struct {
 	HttpServer HttpServerConfig
 	Postgres   PostgresConfig
+	Auth       AccessToken
 }
 
 type HttpServerConfig struct {
@@ -19,6 +20,11 @@ type HttpServerConfig struct {
 	ShutdownTimeout time.Duration `env:"HTTP_SHUTDOWN_TIMEOUT"`
 	ReadTimeout     time.Duration `env:"HTTP_READ_TIMEOUT"`
 	WriteTimeout    time.Duration `env:"HTTP_WRITE_TIMEOUT"`
+}
+
+type AccessToken struct {
+	Key      string        `env:"JWT_ACCESS_KEY"`
+	Duration time.Duration `env:"JWT_ACCESS_DURATION" default:"30m"`
 }
 
 type PostgresConfig struct {

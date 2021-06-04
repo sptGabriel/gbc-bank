@@ -4,8 +4,8 @@ go 1.16
 
 require (
 	github.com/Nhanderu/brdoc v1.1.2
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
-	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0

@@ -1,8 +1,6 @@
 package ports
 
-import "github.com/sptGabriel/banking/app/domain/vos"
-
-type Hasher interface {
+type HashService interface {
 	Hash(secret *string) error
-	Compare(hashed vos.Secret, plainSecret string) error
+	Compare(hashedPassword []byte, password []byte) error
 }

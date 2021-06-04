@@ -45,7 +45,7 @@ func (t Transactional) Exec(ctx context.Context, f func(context.Context) (interf
 	return data, err
 }
 
-func getConnFromCtx(ctx context.Context, db *pgxpool.Pool) pgxtype.Querier {
+func GetConnFromCtx(ctx context.Context, db *pgxpool.Pool) pgxtype.Querier {
 	tx, ok := ctx.Value(transactionKey{}).(pgxtype.Querier)
 	if !ok {
 		return pgxtype.Querier(db)

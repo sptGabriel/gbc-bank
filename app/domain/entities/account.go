@@ -34,7 +34,7 @@ func (acc Account) IsEmpty() bool {
 
 func (acc *Account) DebitAmount(amount int) error {
 	if acc.Balance-amount < 0 {
-		return app.NewMalformedJSONError()
+		return app.ErrInsufficientBalance
 	}
 	acc.Balance -= amount
 	return nil
@@ -42,7 +42,7 @@ func (acc *Account) DebitAmount(amount int) error {
 
 func (acc *Account) CreditAmount(amount int) error {
 	if math.Signbit(float64(amount)) || amount == 0 {
-		return app.NewMalformedJSONError()
+		return app.ErrInvalidAmount
 	}
 	acc.Balance += amount
 	return nil
