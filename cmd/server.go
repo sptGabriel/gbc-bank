@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	_ "github.com/go-swagger/go-swagger"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 	"github.com/sptGabriel/banking/app"
@@ -17,20 +20,25 @@ import (
 	"github.com/sptGabriel/banking/app/infrastructure/logger"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"github.com/sptGabriel/banking/app/presentation/controllers"
+	_ "github.com/sptGabriel/banking/docs"
 	"net/http"
 )
 
+// @host localhost
 func main() {
 	// load application configurations
 	cfg := app.ReadConfig(".env")
+
 	// init zero logger instance
 	logger := logger.NewLogger()
+
 	// connect to postgres
 	conn, err := postgres.ConnectPool(cfg.Postgres.DSN())
 	if err != nil {
 		logger.Fatal().Err(err).Msg("unable to connect to database")
 	}
 	defer conn.Close()
+
 	// run postgres migrations
 	if err = postgres.RunMigrations(cfg.Postgres.URL()); err != nil {
 		logger.Fatal().Err(err).Msg("failed to run postgres migrations")
@@ -39,8 +47,9 @@ func main() {
 	// init adapters
 	jwtAdapter := adapters.NewJWTAdapter(cfg.Auth.Key, cfg.Auth.Duration)
 	bcryptAdapter := adapters.NewBCryptAdapter(10)
+
 	// init repositories
-	transactional:= postgres.NewTransactional(conn)
+	transactional := postgres.NewTransactional(conn)
 	accountRepository := account.NewRepository(conn)
 	transferRepository := transfer.NewRepository(conn)
 
@@ -50,8 +59,7 @@ func main() {
 	getBalanceHandler := handlers.NewGetAccountBalanceHandler(accountRepository)
 	getAccountTransfers := handlers.NewGetAccountTransferHandler(transferRepository)
 	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepository, accountRepository, transactional)
-	signinHandler:= handlers.NewSignInHandler(accountRepository, jwtAdapter, bcryptAdapter)
-
+	signinHandler := handlers.NewSignInHandler(accountRepository, jwtAdapter, bcryptAdapter)
 
 	// init command bus
 	bus := initBus(
@@ -89,20 +97,22 @@ func main() {
 		ReadTimeout:  cfg.HttpServer.ReadTimeout,
 		WriteTimeout: cfg.HttpServer.WriteTimeout,
 	}
+
 	// run http server
 	infraHttp.RunServer(s, logger)
 }
 
-func initRouter (routes ...ports.Route) *mux.Router {
-	router := mux.NewRouter().StrictSlash(true)
+func initRouter(routes ...ports.Route) *mux.Router {
+	router := mux.NewRouter()
+	router.PathPrefix("/docs/v1/swagger").Handler(httpSwagger.WrapHandler).Methods(http.MethodGet)
 	apiRoutes := router.PathPrefix("/api/v1").Subrouter()
 	for _, route := range routes {
 		route.Init(apiRoutes)
 	}
-	return  router
+	return router
 }
 
-func initBus (l *zerolog.Logger,  handlers ...ports.Handler) mediator.Bus {
+func initBus(l *zerolog.Logger, handlers ...ports.Handler) mediator.Bus {
 	bus := mediator.NewBus()
 	for _, handler := range handlers {
 		if err := handler.Init(bus); err != nil {

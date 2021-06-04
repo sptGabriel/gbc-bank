@@ -24,6 +24,16 @@ func NewTransferController(b mediator.Bus) *transferController {
 	return &transferController{bus: b}
 }
 
+// MakeTransfer
+// @Description Do Make a new transfer
+// @tags Transfer
+// @Accept  json
+// @Produce  json
+// @Success 201 {object} interface{}
+// @failure 400 {object} responses.Error
+// @failure 409 {object} responses.Error
+// @failure 500 {object} responses.Error
+// @Router /api/v1/transfers [post]
 func (c transferController) MakeTransfer(r *http.Request) responses.Response {
 	logger := hlog.FromRequest(r)
 
@@ -43,9 +53,20 @@ func (c transferController) MakeTransfer(r *http.Request) responses.Response {
 		return responses.IsError(err)
 	}
 
-	return responses.OK(nil)
+	return responses.Created(nil)
 }
 
+// GetAccountTransfers @Summary Transfer
+// @Description Do get all transfers from account
+// @Tags Transfer
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []schemas.TransferSchema
+// @Failure 404 {object} responses.Error
+// @Failure 422 {object} responses.Error
+// @Failure 409 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /api/v1/transfers [GET]
 func (c transferController) GetAccountTransfers(r *http.Request) responses.Response {
 	logger := hlog.FromRequest(r)
 

@@ -1,0 +1,276 @@
+definitions:
+  dtos.CreateAccountDTO:
+    properties:
+      cpf:
+        type: string
+      name:
+        type: string
+      secret:
+        type: string
+    required:
+    - cpf
+    - name
+    - secret
+    type: object
+  dtos.SignInDTO:
+    properties:
+      cpf:
+        type: string
+      secret:
+        type: string
+    required:
+    - cpf
+    - secret
+    type: object
+  responses.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  responses.Response:
+    properties:
+      data:
+        type: object
+      error:
+        type: error
+      status:
+        type: integer
+    type: object
+  schemas.AccountBalance:
+    properties:
+      balance:
+        type: integer
+      id:
+        type: string
+    type: object
+  schemas.AccountSchema:
+    properties:
+      balance:
+        type: integer
+      cpf:
+        $ref: '#/definitions/vos.CPF'
+        type: object
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        $ref: '#/definitions/vos.Name'
+        type: object
+    type: object
+  schemas.TokenSchema:
+    properties:
+      token:
+        type: string
+    type: object
+  schemas.TransferSchema:
+    properties:
+      account_destination_id:
+        type: string
+      amount:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: string
+    type: object
+  vos.CPF:
+    type: object
+  vos.Name:
+    type: object
+host: localhost
+info:
+  contact: {}
+  license: {}
+paths:
+  /api/v1/accounts:
+    get:
+      consumes:
+      - application/json
+      description: Do get all accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.AccountSchema'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      tags:
+      - Accounts
+    post:
+      consumes:
+      - application/json
+      description: Do create a new account
+      parameters:
+      - description: Body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateAccountDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      tags:
+      - Accounts
+  /api/v1/accounts/{account_id}/balance:
+    get:
+      consumes:
+      - application/json
+      description: Do get account balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.AccountBalance'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      tags:
+      - Accounts
+  /api/v1/transfers:
+    get:
+      consumes:
+      - application/json
+      description: Do get all transfers from account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.TransferSchema'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      tags:
+      - Transfer
+    post:
+      consumes:
+      - application/json
+      description: Do Make a new transfer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      tags:
+      - Transfer
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Returns a token to be used on authenticated routes
+      parameters:
+      - description: Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.SignInDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.TokenSchema'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      tags:
+      - login
+swagger: "2.0"

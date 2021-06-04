@@ -16,7 +16,7 @@ type Config struct {
 }
 
 type HttpServerConfig struct {
-	Port            int           `env:"HTTP_PORT"`
+	Port            int           `env:"HTTP_PORT" default:"8080"`
 	ShutdownTimeout time.Duration `env:"HTTP_SHUTDOWN_TIMEOUT"`
 	ReadTimeout     time.Duration `env:"HTTP_READ_TIMEOUT"`
 	WriteTimeout    time.Duration `env:"HTTP_WRITE_TIMEOUT"`

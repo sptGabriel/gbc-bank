@@ -20,6 +20,6 @@ func (r *accountsRouter) Init(router *mux.Router) {
 	var accountPath = "/accounts"
 	var balancePath = fmt.Sprintf("%s/{account_id}/balance", accountPath)
 	router.HandleFunc(accountPath, middlewares.Handle(r.ctrl.GetAccounts)).Methods(http.MethodGet)
-	router.HandleFunc(accountPath, middlewares.Handle(r.ctrl.NewAccount)).Methods(http.MethodPost)
+	router.HandleFunc(accountPath, middlewares.Handle(r.ctrl.Create)).Methods(http.MethodPost)
 	router.HandleFunc(balancePath, middlewares.Handle(r.ctrl.GetBalance)).Methods(http.MethodGet)
 }
