@@ -46,6 +46,10 @@ func BadRequest(err error) Response {
 	return genericError(http.StatusBadRequest, err)
 }
 
+func Unauthorized(err error) Response {
+	return genericError(http.StatusUnauthorized, err)
+}
+
 func genericError(status int, err error) Response {
 	return Response{
 		Status:  status,
