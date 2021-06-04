@@ -1,7 +1,11 @@
 package commands
 
-import "github.com/sptGabriel/banking/app/domain/vos"
+import "github.com/google/uuid"
 
-type GetAllAccountBalanceCommand struct {
-	Id vos.AccountId
+type GetBalanceCommand struct {
+	Id uuid.UUID
+}
+
+func NewGetBalanceCommand(Id uuid.UUID) GetBalanceCommand {
+	return GetBalanceCommand{Id}
 }
