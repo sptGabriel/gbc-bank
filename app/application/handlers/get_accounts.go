@@ -36,11 +36,11 @@ func (h *getAccountsHandler) Execute(ctx context.Context, cmd mediator.Command) 
 		return nil, err
 	}
 
-	return parseToSchema(accounts), err
+	return h.parseToSchema(accounts), err
 }
 
-func parseToSchema(a []entities.Account) []schemas.AccountSchema {
-	var accounts []schemas.AccountSchema
+func (h *getAccountsHandler) parseToSchema(a []entities.Account) []schemas.AccountSchema {
+	accounts := make([]schemas.AccountSchema, 0)
 
 	for _, account := range a {
 		schemaAccount := schemas.NewAccountSchema(account)
