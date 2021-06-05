@@ -13,6 +13,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.2.5
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
+	github.com/matryer/moq v0.2.1 // indirect
 	github.com/rs/zerolog v1.22.0
 	github.com/swaggo/http-swagger v1.0.0
 	github.com/swaggo/swag v1.7.0

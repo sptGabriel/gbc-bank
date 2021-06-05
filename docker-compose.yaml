@@ -1,31 +1,48 @@
 version: '3.8'
 
 services:
-
-  api:
+  app:
     build: .
     container_name: api
     ports:
       - 8080:8080
-    env_file:
-      - .env
+    environment:
+      "SWAGGER_HOST": localhost:8080
+      "HTTP_PORT": 8080
+      "HTTP_SHUTDOWN_TIMEOUT": 1s
+      "HTTP_READ_TIMEOUT": 30s
+      "HTTP_WRITE_TIMEOUT": 30s
+      "DB_HOST": db
+      "DB_NAME": bank
+      "DB_PORT": 5432
+      "DB_USER": postgres
+      "DB_PASS": postgres
+      "JWT_ACCESS_KEY": stone
+      "JWT_ACCESS_DURATION": 60m
     volumes:
       - .:/go/src/
     depends_on:
       - db
   db:
-    image: postgres:12.2-alpine
+    image: "postgres:12-alpine"
     container_name: "database"
-    restart: always
-    tty: true
+    restart: unless-stopped
+    command: ["postgres", "-c", "log_statement=all"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bank
     volumes:
       - db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=bk
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
     ports:
       - "5432:5432"
+
 volumes:
   db:
     driver: local
