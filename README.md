@@ -28,8 +28,7 @@
    make dev-down
 ```
 
-After using make dev-local or make dev-docker, the API will be available in http://localhost:3000/api/v1
-
+The server will be listening on localhost:8080.
 # End Points
 
 ### `/api/v1/accounts - POST`
@@ -40,6 +39,7 @@ After using make dev-local or make dev-docker, the API will be available in http
   "secret": "45478494894",
   "cpf": "103.913.350-90"
 }
+```
 
 ### Details
 
@@ -61,7 +61,7 @@ After using make dev-local or make dev-docker, the API will be available in http
     "created_at": "2021-06-05T04:03:32.984852Z"
   }
 ]
-```json
+```
 
 ### `/api/v1/accounts/{account_id}/balance - Get`
 
@@ -72,7 +72,7 @@ After using make dev-local or make dev-docker, the API will be available in http
   "id": "abce8b02-5f3a-4f2c-96a7-964e37d0dc08",
   "balance": 0
 }
-```json
+```
 
 ### `/api/v1/login - POST`
 
@@ -82,6 +82,7 @@ After using make dev-local or make dev-docker, the API will be available in http
   "secret": "45478494894",
   "cpf": "103.913.350-90"
 }
+```
 
 ### Response
 
@@ -89,7 +90,7 @@ After using make dev-local or make dev-docker, the API will be available in http
 {
   "token": "jwt token"
 }
-```json
+```
 
 ### `/api/v1/transfers - POST`
 
@@ -98,7 +99,7 @@ After using make dev-local or make dev-docker, the API will be available in http
   "account_destination_id": "abce8b02-5f3a-4f2c-96a7-964e37d0dc08",
   "amount": 100,
 }
-```json
+```
 
 ### `/api/v1/transfers - Get` (Bearer token required)
 
@@ -113,7 +114,7 @@ After using make dev-local or make dev-docker, the API will be available in http
      "created_at": "2021-06-04T23:22:00.622329Z"
   }
 ]
-```json
+```
 
 ## Testing
 
