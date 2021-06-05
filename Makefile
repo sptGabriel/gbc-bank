@@ -2,11 +2,11 @@ NAME=gbc-banking
 OS ?= linux
 
 .PHONY: dev-up
-run-dev:
+dev-up:
 	@echo ">>>>> Starting server application..."
 	docker-compose up --build -d
 
 .PHONY: dev-down
-run-dev:
+dev-down:
 	@echo ">>>>> Shutting application..."
 	docker-compose down
