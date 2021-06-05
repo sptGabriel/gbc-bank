@@ -31,7 +31,7 @@
 The server will be listening on localhost:8080.
 # End Points
 
-###The complete API documentation is available at /swagger.
+### The complete API documentation is available at /swagger.
 
 Demo: http://localhost:8080/docs/v1/swagger/index.html
 
