@@ -6,8 +6,8 @@
 
 # Libraries
 
-- [Swag] (https://github.com/swaggo/swag)
-- [Zerolog] (https://github.com/rs/zerolog)
+- [PGX](https://github.com/swaggo/swag)
+- [Zerolog](https://github.com/rs/zerolog)
 - [PGX](https://github.com/jackc/pgx)
 - [Mux](https://github.com/gorilla/mux)
 - [Bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt)

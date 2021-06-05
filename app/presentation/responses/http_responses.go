@@ -12,7 +12,6 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-
 func Created(d interface{}) Response {
 	return Response{
 		Status: http.StatusCreated,

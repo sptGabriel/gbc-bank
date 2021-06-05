@@ -13,6 +13,7 @@ type Config struct {
 	HttpServer HttpServerConfig
 	Postgres   PostgresConfig
 	Auth       AccessToken
+	Swagger    SwaggerConfig
 }
 
 type HttpServerConfig struct {
@@ -25,6 +26,10 @@ type HttpServerConfig struct {
 type AccessToken struct {
 	Key      string        `env:"JWT_ACCESS_KEY"`
 	Duration time.Duration `env:"JWT_ACCESS_DURATION" default:"30m"`
+}
+
+type SwaggerConfig struct {
+	SwaggerHost string `env: "SWAGGER_HOST"`
 }
 
 type PostgresConfig struct {

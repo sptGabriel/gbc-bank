@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/rs/zerolog"
 	"net/http"
 	"os"
@@ -32,6 +33,7 @@ func RunServer(s *http.Server, log *zerolog.Logger) {
 	}()
 	err := <-serverErrors
 	if !errors.Is(err, http.ErrServerClosed) {
+		fmt.Println(err)
 		log.Error().Err(err)
 	}
 }

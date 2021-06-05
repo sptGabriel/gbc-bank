@@ -20,15 +20,14 @@ import (
 	"github.com/sptGabriel/banking/app/infrastructure/logger"
 	"github.com/sptGabriel/banking/app/infrastructure/mediator"
 	"github.com/sptGabriel/banking/app/presentation/controllers"
-	_ "github.com/sptGabriel/banking/docs"
+	swagger "github.com/sptGabriel/banking/docs"
 	"net/http"
 )
 
-// @host localhost
+// @host localhost:8080
 func main() {
 	// load application configurations
 	cfg := app.ReadConfig(".env")
-
 	// init zero logger instance
 	logger := logger.NewLogger()
 
@@ -82,6 +81,9 @@ func main() {
 	authRoute := routes.NewAuthRouter(signController)
 	transferRoute := routes.NewTransferRouter(transferController, jwtAdapter)
 
+	// configure global swagger with environment variable
+	swagger.SwaggerInfo.Host = cfg.Swagger.SwaggerHost
+
 	// router
 	router := initRouter(
 		transferRoute,
@@ -93,11 +95,10 @@ func main() {
 	//	create http server instance
 	s := &http.Server{
 		Handler:      middlewares.Recovery(router),
-		Addr:         fmt.Sprintf("127.0.0.1:%d", cfg.HttpServer.Port),
+		Addr:         fmt.Sprintf("0.0.0.0:%d", cfg.HttpServer.Port),
 		ReadTimeout:  cfg.HttpServer.ReadTimeout,
 		WriteTimeout: cfg.HttpServer.WriteTimeout,
 	}
-
 	// run http server
 	infraHttp.RunServer(s, logger)
 }
