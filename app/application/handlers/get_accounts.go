@@ -28,7 +28,7 @@ func (h *getAccountsHandler) Execute(ctx context.Context, cmd mediator.Command) 
 	defer cancel()
 
 	if _, ok := cmd.(commands.GetAllAccountsCommand); !ok {
-		return nil, app.Err(operation, errors.New("invalid get account command"))
+		return nil, app.Err(operation, errors.New("invalid get accounts command"))
 	}
 
 	accounts, err := h.repository.GetAll(ctx)
