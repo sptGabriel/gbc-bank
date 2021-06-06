@@ -29,7 +29,7 @@ func (h *getAccountBalanceHandler) Execute(ctx context.Context, cmd mediator.Com
 
 	command, ok := cmd.(commands.GetBalanceCommand)
 	if !ok {
-		return nil, app.Err(operation, errors.New("invalid transfer command"))
+		return nil, app.Err(operation, errors.New("invalid get account balance command"))
 	}
 
 	account, err := h.repository.GetByID(ctx, vos.AccountId(command.Id))

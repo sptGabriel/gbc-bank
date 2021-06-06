@@ -39,7 +39,7 @@ func (h *makeTransferHandler) Execute(ctx context.Context, cmd mediator.Command)
 
 	command, ok := cmd.(commands.MakeTransferCommand)
 	if !ok {
-		return nil, app.Err(operation, errors.New("invalid transfer command"))
+		return nil, app.Err(operation, errors.New("invalid make transfer command"))
 	}
 
 	originAccountId := vos.AccountId(command.AccountOriginId)

@@ -32,7 +32,7 @@ func (h *signInHandler) Execute(ctx context.Context, cmd mediator.Command) (inte
 
 	command, ok := cmd.(commands.SignInCommand)
 	if !ok {
-		return nil, app.Err(operation, errors.New("invalid transfer command"))
+		return nil, app.Err(operation, errors.New("invalid signin command"))
 	}
 
 	cpf, err := vos.NewCpf(command.Cpf)
