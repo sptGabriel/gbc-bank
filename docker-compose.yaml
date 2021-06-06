@@ -7,12 +7,12 @@ services:
     ports:
       - 8080:8080
     environment:
-      "SWAGGER_HOST": localhost:8080
+      "SWAGGER_HOST": 0.0.0.0:8080
       "HTTP_PORT": 8080
       "HTTP_SHUTDOWN_TIMEOUT": 1s
       "HTTP_READ_TIMEOUT": 30s
       "HTTP_WRITE_TIMEOUT": 30s
-      "DB_HOST": db
+      "DB_HOST": postgres
       "DB_NAME": bank
       "DB_PORT": 5432
       "DB_USER": postgres
@@ -22,10 +22,10 @@ services:
     volumes:
       - .:/go/src/
     depends_on:
-      - db
-  db:
+      postgres:
+        condition: service_healthy
+  postgres:
     image: "postgres:12-alpine"
-    container_name: "database"
     restart: unless-stopped
     command: ["postgres", "-c", "log_statement=all"]
     environment:
@@ -39,7 +39,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
     ports:
       - "5432:5432"
 
