@@ -18,29 +18,29 @@ type Config struct {
 
 type HttpServerConfig struct {
 	Port            int           `env:"HTTP_PORT" default:"8080"`
-	ShutdownTimeout time.Duration `env:"HTTP_SHUTDOWN_TIMEOUT"`
-	ReadTimeout     time.Duration `env:"HTTP_READ_TIMEOUT"`
-	WriteTimeout    time.Duration `env:"HTTP_WRITE_TIMEOUT"`
+	ShutdownTimeout time.Duration `env:"HTTP_SHUTDOWN_TIMEOUT" default:"1s"`
+	ReadTimeout     time.Duration `env:"HTTP_READ_TIMEOUT" default:"30s"`
+	WriteTimeout    time.Duration `env:"HTTP_WRITE_TIMEOUT" default:"10s"`
 }
 
 type AccessToken struct {
-	Key      string        `env:"JWT_ACCESS_KEY"`
+	Key      string        `env:"JWT_ACCESS_KEY" default:"stone"`
 	Duration time.Duration `env:"JWT_ACCESS_DURATION" default:"30m"`
 }
 
 type SwaggerConfig struct {
-	SwaggerHost string `env: "SWAGGER_HOST"`
+	SwaggerHost string `env: "SWAGGER_HOST" default:"localhost:8080"`
 }
 
 type PostgresConfig struct {
-	DatabaseName string `env:"DB_NAME"`
-	User         string `env:"DB_USER"`
-	Password     string `env:"DB_PASS"`
-	Host         string `env:"DB_HOST"`
-	Port         string `env:"DB_PORT"`
-	PoolMinSize  string `env:"DB_POOL_MIN_SIZE"`
-	PoolMaxSize  string `env:"DB_POOL_MAX_SIZE"`
-	SSLMode      string `env:"DB_SSL_MODE"`
+	DatabaseName string `env:"DB_NAME" default:"postgres"`
+	User         string `env:"DB_USER" default:"postgres"`
+	Password     string `env:"DB_PASS" default:"postgres"`
+	Host         string `env:"DB_HOST" default:"localhost"`
+	Port         string `env:"DB_PORT" default:"5432"`
+	PoolMinSize  string `env:"DB_POOL_MIN_SIZE" default:"2"`
+	PoolMaxSize  string `env:"DB_POOL_MAX_SIZE" default:"10"`
+	SSLMode      string `env:"DB_SSL_MODE" default:"disable"`
 }
 
 func ReadConfigFromEnv() *Config {
