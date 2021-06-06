@@ -10,3 +10,8 @@ dev-up:
 dev-down:
 	@echo ">>>>> Shutting application..."
 	docker-compose down
+
+.PHONY: test
+test:
+	@echo "==> Running Tests..."
+	go test -v ./...
