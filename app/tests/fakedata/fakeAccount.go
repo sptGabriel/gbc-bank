@@ -10,5 +10,6 @@ func FakeAccount() *entities.Account {
 	name,_ := vos.NewName("STONE stone")
 	secret, _ := vos.NewSecret("stone Stone")
 	account := entities.NewAccount(name, cpf, secret)
+	account.CreditAmount(2000)
 	return &account
 }

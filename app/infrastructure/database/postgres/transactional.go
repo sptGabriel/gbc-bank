@@ -10,17 +10,21 @@ import (
 
 type transactionKey struct{}
 
-type Transactional struct {
+type transactional struct {
 	conn *pgxpool.Pool
 }
 
-func NewTransactional(c *pgxpool.Pool) Transactional {
-	return Transactional{
+type Transactional interface {
+	Exec(ctx context.Context, f func(context.Context) (interface{}, error)) (interface{}, error)
+}
+
+func NewTransactional(c *pgxpool.Pool) transactional {
+	return transactional{
 		conn: c,
 	}
 }
 
-func (t Transactional) Exec(ctx context.Context, f func(context.Context) (interface{}, error)) (interface{}, error) {
+func (t transactional) Exec(ctx context.Context, f func(context.Context) (interface{}, error)) (interface{}, error) {
 	tx, err := t.conn.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("postgres.Transactional: failed to start transaction %w", err)

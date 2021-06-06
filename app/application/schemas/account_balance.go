@@ -1,4 +1,4 @@
-package schemas
+ package schemas
 
 import (
 	"github.com/sptGabriel/banking/app/domain/vos"
