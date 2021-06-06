@@ -33,7 +33,7 @@ func (ac *createAccountHandler) Execute(ctx context.Context, cmd mediator.Comman
 
 	command, ok := cmd.(commands.CreateAccountCommand)
 	if !ok {
-		return nil, app.Err(operation, errors.New("invalid transfer command"))
+		return nil, app.Err(operation, errors.New("invalid create account command"))
 	}
 
 	name, err := vos.NewName(command.Name)
