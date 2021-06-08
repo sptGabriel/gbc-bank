@@ -41,7 +41,7 @@ Demo: http://localhost:8080/docs/v1/swagger/index.html
 {
   "name": "gabriel gabriel",
   "secret": "45478494894",
-  "cpf": "103.913.350-90"
+  "cpf": "57364376003
 }
 ```
 
@@ -82,9 +82,8 @@ Demo: http://localhost:8080/docs/v1/swagger/index.html
 
 ```json
 {
-  "name": "gabriel gabriel",
   "secret": "45478494894",
-  "cpf": "103.913.350-90"
+  "cpf": "57364376003"
 }
 ```
 
