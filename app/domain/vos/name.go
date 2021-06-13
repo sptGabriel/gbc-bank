@@ -17,7 +17,7 @@ const (
 	maxNameLength = 30
 )
 
-var ErrInvalidAccountName   = errors.New("account name not valid")
+var ErrInvalidAccountName = errors.New("account name not valid")
 
 func NewName(name string) (Name, error) {
 	if name == "" || !utils.InRange(minNameLength, maxNameLength, len(strings.TrimSpace(name))) {

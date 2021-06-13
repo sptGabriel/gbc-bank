@@ -24,10 +24,10 @@ type AuthenticateRequest struct {
 	Secret string `json:"secret"`
 }
 type AuthenticateResponse struct {
-	Token    string `json:"token"`
+	Token string `json:"token"`
 }
 
-func NewAuthenticateResponse (token string) AuthenticateResponse {
+func NewAuthenticateResponse(token string) AuthenticateResponse {
 	return AuthenticateResponse{token}
 }
 

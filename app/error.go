@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	ErrInternal                = errors.New("internal error")
-	ErrUnauthorized            = errors.New("unauthorized error")
-	ErrMalformedToken          = errors.New("token is not valid")
+	ErrInternal       = errors.New("internal error")
+	ErrUnauthorized   = errors.New("unauthorized error")
+	ErrMalformedToken = errors.New("token is not valid")
 )
 
 type DomainError struct {

@@ -12,7 +12,7 @@ type CPF struct {
 	value string
 }
 
-var ErrInvalidAccountCPF    = errors.New("account cpf not valid")
+var ErrInvalidAccountCPF = errors.New("account cpf not valid")
 
 func NewCPF(cpf string) (CPF, error) {
 	if cpf := brdoc.IsCPF(cpf); !cpf {

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	ErrAccountOriginNotFound = errors.New("origin account not found")
+	ErrAccountOriginNotFound      = errors.New("origin account not found")
 	ErrAccountDestinationNotFound = errors.New("destination account not found")
 )
 
