@@ -1,26 +1,31 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	httpSwagger "github.com/swaggo/http-swagger"
-
-	_ "github.com/go-swagger/go-swagger"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 	"github.com/sptGabriel/banking/app"
-	"github.com/sptGabriel/banking/app/application/handlers"
-	"github.com/sptGabriel/banking/app/application/ports"
 	"github.com/sptGabriel/banking/app/common/adapters"
-	"github.com/sptGabriel/banking/app/infrastructure/database/postgres"
-	"github.com/sptGabriel/banking/app/infrastructure/database/postgres/account"
-	"github.com/sptGabriel/banking/app/infrastructure/database/postgres/transfer"
-	infraHttp "github.com/sptGabriel/banking/app/infrastructure/http"
-	"github.com/sptGabriel/banking/app/infrastructure/http/middlewares"
-	"github.com/sptGabriel/banking/app/infrastructure/http/routes"
-	"github.com/sptGabriel/banking/app/infrastructure/logger"
-	"github.com/sptGabriel/banking/app/infrastructure/mediator"
-	"github.com/sptGabriel/banking/app/presentation/controllers"
-	swagger "github.com/sptGabriel/banking/docs"
+	"github.com/sptGabriel/banking/app/domain/services"
+	accUseCases "github.com/sptGabriel/banking/app/domain/usecases/accounts"
+	transferUseCases "github.com/sptGabriel/banking/app/domain/usecases/transfers"
+	accHandler "github.com/sptGabriel/banking/app/gateway/api/accounts"
+	authHandler "github.com/sptGabriel/banking/app/gateway/api/authentication"
+	"github.com/sptGabriel/banking/app/gateway/api/shared/middlewares"
+	transferHandler "github.com/sptGabriel/banking/app/gateway/api/transfers"
+	"github.com/sptGabriel/banking/app/gateway/db/postgres"
+	"github.com/sptGabriel/banking/app/gateway/db/postgres/accounts"
+	"github.com/sptGabriel/banking/app/gateway/db/postgres/transfers"
+	"github.com/sptGabriel/banking/app/gateway/logger"
+	swagger "github.com/sptGabriel/banking/docs/swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"net/http"
 )
 
@@ -28,6 +33,7 @@ import (
 func main() {
 	// load application configurations
 	cfg := app.ReadConfig(".env")
+
 	// init zero logger instance
 	logger := logger.NewLogger()
 
@@ -47,78 +53,68 @@ func main() {
 	jwtAdapter := adapters.NewJWTAdapter(cfg.Auth.Key, cfg.Auth.Duration)
 	bcryptAdapter := adapters.NewBCryptAdapter(10)
 
-	// init repositories
+	// repositories
+	transferRepo := transfers.NewRepository(conn)
+	accRepo := accounts.NewRepository(conn)
 	transactional := postgres.NewTransactional(conn)
-	accountRepository := account.NewRepository(conn)
-	transferRepository := transfer.NewRepository(conn)
 
-	// init handlers
-	newAccountHandler := handlers.NewCreateAccountHandler(accountRepository, bcryptAdapter)
-	getAccountsHandler := handlers.NewGetAccountsHandler(accountRepository)
-	getBalanceHandler := handlers.NewGetAccountBalanceHandler(accountRepository)
-	getAccountTransfers := handlers.NewGetAccountTransferHandler(transferRepository)
-	makeTransferHandler := handlers.NewMakeTransferHandler(transferRepository, accountRepository, transactional)
-	signinHandler := handlers.NewSignInHandler(accountRepository, jwtAdapter, bcryptAdapter)
+	// init domain services
+	authService := services.NewAuth(accRepo, bcryptAdapter, jwtAdapter)
 
-	// init command bus
-	bus := initBus(
-		logger,
-		newAccountHandler,
-		makeTransferHandler,
-		getAccountsHandler,
-		signinHandler,
-		getBalanceHandler,
-		getAccountTransfers,
-	)
-
-	// init controllers
-	accountController := controllers.NewAccountController(bus)
-	transferController := controllers.NewTransferController(bus)
-	signController := controllers.NewSignInController(bus)
-
-	//	init routes
-	accRoute := routes.NewAccountRoute(accountController)
-	authRoute := routes.NewAuthRouter(signController)
-	transferRoute := routes.NewTransferRouter(transferController, jwtAdapter)
+	// useCases
+	accountsUseCase := accUseCases.NewUseCase(accRepo, bcryptAdapter)
+	transfersUseCase := transferUseCases.NewUseCase(accRepo, transferRepo, transactional)
 
 	// configure global swagger with environment variable
 	swagger.SwaggerInfo.Host = cfg.Swagger.SwaggerHost
 
-	// router
-	router := initRouter(
-		transferRoute,
-		accRoute,
-		accRoute,
-		authRoute,
-	)
+	// init router
+	router := mux.NewRouter()
+	router.PathPrefix("/docs/v1/swagger").Handler(httpSwagger.WrapHandler).Methods(http.MethodGet)
+	apiRoutes := router.PathPrefix("/api/v1").Subrouter()
+	router.NotFoundHandler = middlewares.NotFoundHandle()
+	router.Use(middlewares.CORSHandle)
+	router.Use(middlewares.JsonHandle)
 
-	//	create http server instance
+	// init router handlers
+	accHandler.NewHandler(apiRoutes, accountsUseCase)
+	transferHandler.NewHandler(apiRoutes, transfersUseCase, jwtAdapter)
+	authHandler.NewHandler(apiRoutes, authService)
+
+	// create http server instance
 	s := &http.Server{
 		Handler:      middlewares.Recovery(router),
 		Addr:         fmt.Sprintf("0.0.0.0:%d", cfg.HttpServer.Port),
 		ReadTimeout:  cfg.HttpServer.ReadTimeout,
 		WriteTimeout: cfg.HttpServer.WriteTimeout,
 	}
+
 	// run http server
-	infraHttp.RunServer(s, logger)
+	RunServer(s, logger)
 }
 
-func initRouter(routes ...ports.Route) *mux.Router {
-	router := mux.NewRouter()
-	router.PathPrefix("/docs/v1/swagger").Handler(httpSwagger.WrapHandler).Methods(http.MethodGet)
-	apiRoutes := router.PathPrefix("/api/v1").Subrouter()
-	for _, route := range routes {
-		route.Init(apiRoutes)
-	}
-	return router
-}
-
-func initBus(l *zerolog.Logger, handlers ...ports.Handler) mediator.Bus {
-	bus := mediator.NewBus()
-	for _, handler := range handlers {
-		if err := handler.Init(bus); err != nil {
-			l.Fatal().Err(err).Msg("failed to run postgres migrations")
+func RunServer(s *http.Server, log *zerolog.Logger) {
+	serverErrors := make(chan error, 1)
+	go func() {
+		if err := s.ListenAndServe(); err != nil {
+			serverErrors <- err
 		}
+	}()
+	go func() {
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+		sig := <-signals
+		log.Info().Msgf("captured signal: %v - server shutdown", sig)
+		signal.Stop(signals)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := s.Shutdown(ctx); err != nil {
+			s.Close()
+		}
+	}()
+	err := <-serverErrors
+	if !errors.Is(err, http.ErrServerClosed) {
+		fmt.Println(err)
+		log.Error().Err(err)
 	}
-	return bus
 }
