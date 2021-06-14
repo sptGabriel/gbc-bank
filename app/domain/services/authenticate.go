@@ -44,9 +44,6 @@ func (a *authenticate) Authenticate(ctx context.Context, cpf vos.CPF, secret vos
 	}
 
 	token, err := a.cipher.Encrypt(account.Id.String())
-	if err := a.hash.Compare(hashedSecret, plainSecret); err != nil {
-		return "", app.Err(operation, err)
-	}
 
 	return token, nil
 }

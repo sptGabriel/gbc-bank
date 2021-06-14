@@ -11,6 +11,5 @@ func (uc useCase) GetTransfers(ctx context.Context, id vos.AccountId) ([]transfe
 	if err != nil {
 		return nil, err
 	}
-
 	return transfers, nil
 }

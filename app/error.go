@@ -23,7 +23,6 @@ func Err(op string, err error) *DomainError {
 	}
 
 	domainError := DomainError{op: op, err: err}
-
 	if error, ok := err.(*DomainError); ok {
 		error.parent = &domainError
 	}
