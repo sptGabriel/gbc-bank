@@ -1,10 +1,15 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {},
-        "license": {}
+        "title": "Gbc Banking API",
+        "version": "1",
+        "contact": {
+            "email": "gabrielcerqueira96@hotmail.com",
+            "name": "gabriel costa",
+            "url": "https://github.com/sptGabriel/"
+        }
     },
-    "host": "localhost",
+    "host": "localhost:8080",
     "paths": {
         "/api/v1/accounts": {
             "get": {
@@ -24,7 +29,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/schemas.AccountSchema"
+                                "$ref": "#/definitions/accounts.GetAccountsResponse"
                             }
                         }
                     },
@@ -72,7 +77,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dtos.CreateAccountDTO"
+                            "$ref": "#/definitions/accounts.CreateAccountRequest"
                         }
                     }
                 ],
@@ -126,10 +131,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/schemas.AccountBalance"
-                            }
+                            "$ref": "#/definitions/accounts.AccountBalance"
                         }
                     },
                     "404": {
@@ -177,7 +179,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/schemas.TransferSchema"
+                                "$ref": "#/definitions/transfers.GetTransfersResponse"
                             }
                         }
                     },
@@ -217,6 +219,17 @@
                 ],
                 "tags": [
                     "Transfer"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transfers.CreateTransferRequest"
+                        }
+                    }
                 ],
                 "responses": {
                     "201": {
@@ -265,7 +278,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dtos.SignInDTO"
+                            "$ref": "#/definitions/accounts.AuthenticateRequest"
                         }
                     }
                 ],
@@ -273,7 +286,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.TokenSchema"
+                            "$ref": "#/definitions/accounts.AuthenticateResponse"
                         }
                     },
                     "400": {
@@ -299,7 +312,37 @@
         }
     },
     "definitions": {
-        "dtos.CreateAccountDTO": {
+        "accounts.AccountBalance": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "accounts.AuthenticateRequest": {
+            "type": "object",
+            "properties": {
+                "cpf": {
+                    "type": "string"
+                },
+                "secret": {
+                    "type": "string"
+                }
+            }
+        },
+        "accounts.AuthenticateResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "accounts.CreateAccountRequest": {
             "type": "object",
             "required": [
                 "cpf",
@@ -318,18 +361,25 @@
                 }
             }
         },
-        "dtos.SignInDTO": {
+        "accounts.GetAccountsResponse": {
             "type": "object",
-            "required": [
-                "cpf",
-                "secret"
-            ],
             "properties": {
+                "balance": {
+                    "type": "integer"
+                },
                 "cpf": {
+                    "type": "object",
+                    "$ref": "#/definitions/vos.CPF"
+                },
+                "created_at": {
                     "type": "string"
                 },
-                "secret": {
+                "id": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "object",
+                    "$ref": "#/definitions/vos.Name"
                 }
             }
         },
@@ -355,48 +405,18 @@
                 }
             }
         },
-        "schemas.AccountBalance": {
+        "transfers.CreateTransferRequest": {
             "type": "object",
             "properties": {
-                "balance": {
+                "account_destination_id": {
+                    "type": "string"
+                },
+                "amount": {
                     "type": "integer"
-                },
-                "id": {
-                    "type": "string"
                 }
             }
         },
-        "schemas.AccountSchema": {
-            "type": "object",
-            "properties": {
-                "balance": {
-                    "type": "integer"
-                },
-                "cpf": {
-                    "type": "object",
-                    "$ref": "#/definitions/vos.CPF"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "object",
-                    "$ref": "#/definitions/vos.Name"
-                }
-            }
-        },
-        "schemas.TokenSchema": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.TransferSchema": {
+        "transfers.GetTransfersResponse": {
             "type": "object",
             "properties": {
                 "account_destination_id": {

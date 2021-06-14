@@ -37,6 +37,17 @@ func NewHandler(router *mux.Router, authService services.Authenticate) *handler 
 	return h
 }
 
+// Authenticate
+// @Description Returns a token to be used on authenticated routes
+// @tags login
+// @Accept json
+// @Produce json
+// @Param credentials body AuthenticateRequest true "Credentials"
+// @Success 200 {object} AuthenticateResponse
+// @failure 400 {object} responses.Response
+// @failure 409 {object} responses.Response
+// @failure 500 {object} responses.Response
+// @Router /login [post]
 func (h handler) Authenticate(r *http.Request) responses.Response {
 	const operation = "Handlers.Authentication.Authenticate"
 

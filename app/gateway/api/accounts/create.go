@@ -15,6 +15,18 @@ type CreateAccountRequest struct {
 	Secret string `json:"secret" validate:"required,min=8"`
 }
 
+// Create @Summary accounts
+// @Description Do create a new account
+// @Tags Accounts
+// @Accept  json
+// @Produce  json
+// @Param Body body CreateAccountRequest true "Body"
+// @Success 201 {object} interface{}
+// @Failure 404 {object} responses.Error
+// @Failure 422 {object} responses.Error
+// @Failure 409 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /api/v1/accounts  [POST]
 func (h handler) Create(r *http.Request) responses.Response {
 	const operation = "Handlers.Accounts.CreateAccount"
 

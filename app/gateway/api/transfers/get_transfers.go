@@ -27,6 +27,17 @@ func NewGetTransferResponse(transfer transfers.Transfer) GetTransfersResponse {
 	}
 }
 
+// GetTransfers @Summary Transfer
+// @Description Do get all transfers from account
+// @Tags Transfer
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []GetTransfersResponse
+// @Failure 404 {object} responses.Error
+// @Failure 422 {object} responses.Error
+// @Failure 409 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /api/v1/transfers [GET]
 func (h handler) GetTransfers(r *http.Request) responses.Response {
 	const operation = "Handlers.Transfers.GetTransfers"
 

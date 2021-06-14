@@ -43,7 +43,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/schemas.AccountSchema"
+                                "$ref": "#/definitions/accounts.GetAccountsResponse"
                             }
                         }
                     },
@@ -91,7 +91,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dtos.CreateAccountDTO"
+                            "$ref": "#/definitions/accounts.CreateAccountRequest"
                         }
                     }
                 ],
@@ -145,10 +145,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/schemas.AccountBalance"
-                            }
+                            "$ref": "#/definitions/accounts.AccountBalance"
                         }
                     },
                     "404": {
@@ -196,7 +193,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/schemas.TransferSchema"
+                                "$ref": "#/definitions/transfers.GetTransfersResponse"
                             }
                         }
                     },
@@ -236,6 +233,17 @@ var doc = `{
                 ],
                 "tags": [
                     "Transfer"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transfers.CreateTransferRequest"
+                        }
+                    }
                 ],
                 "responses": {
                     "201": {
@@ -284,7 +292,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dtos.SignInDTO"
+                            "$ref": "#/definitions/accounts.AuthenticateRequest"
                         }
                     }
                 ],
@@ -292,7 +300,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.TokenSchema"
+                            "$ref": "#/definitions/accounts.AuthenticateResponse"
                         }
                     },
                     "400": {
@@ -318,7 +326,37 @@ var doc = `{
         }
     },
     "definitions": {
-        "dtos.CreateAccountDTO": {
+        "accounts.AccountBalance": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "accounts.AuthenticateRequest": {
+            "type": "object",
+            "properties": {
+                "cpf": {
+                    "type": "string"
+                },
+                "secret": {
+                    "type": "string"
+                }
+            }
+        },
+        "accounts.AuthenticateResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "accounts.CreateAccountRequest": {
             "type": "object",
             "required": [
                 "cpf",
@@ -337,18 +375,25 @@ var doc = `{
                 }
             }
         },
-        "dtos.SignInDTO": {
+        "accounts.GetAccountsResponse": {
             "type": "object",
-            "required": [
-                "cpf",
-                "secret"
-            ],
             "properties": {
+                "balance": {
+                    "type": "integer"
+                },
                 "cpf": {
+                    "type": "object",
+                    "$ref": "#/definitions/vos.CPF"
+                },
+                "created_at": {
                     "type": "string"
                 },
-                "secret": {
+                "id": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "object",
+                    "$ref": "#/definitions/vos.Name"
                 }
             }
         },
@@ -374,46 +419,18 @@ var doc = `{
                 }
             }
         },
-        "schemas.AccountBalance": {
+        "transfers.CreateTransferRequest": {
             "type": "object",
             "properties": {
-                "balance": {
+                "account_destination_id": {
+                    "type": "string"
+                },
+                "amount": {
                     "type": "integer"
-                },
-                "id": {
-                    "type": "string"
                 }
             }
         },
-        "schemas.AccountSchema": {
-            "type": "object",
-            "properties": {
-                "balance": {
-                    "type": "integer"
-                },
-                "cpf": {
-                    "type": "string",
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                }
-            }
-        },
-        "schemas.TokenSchema": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.TransferSchema": {
+        "transfers.GetTransfersResponse": {
             "type": "object",
             "properties": {
                 "account_destination_id": {
@@ -429,6 +446,12 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "vos.CPF": {
+            "type": "object"
+        },
+        "vos.Name": {
+            "type": "object"
         }
     }
 }`
@@ -445,7 +468,7 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "",
-	Host:        "localhost",
+	Host:        "localhost:8080",
 	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "",

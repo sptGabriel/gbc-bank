@@ -1,5 +1,24 @@
 definitions:
-  dtos.CreateAccountDTO:
+  accounts.AccountBalance:
+    properties:
+      balance:
+        type: integer
+      id:
+        type: string
+    type: object
+  accounts.AuthenticateRequest:
+    properties:
+      cpf:
+        type: string
+      secret:
+        type: string
+    type: object
+  accounts.AuthenticateResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  accounts.CreateAccountRequest:
     properties:
       cpf:
         type: string
@@ -12,15 +31,20 @@ definitions:
     - name
     - secret
     type: object
-  dtos.SignInDTO:
+  accounts.GetAccountsResponse:
     properties:
+      balance:
+        type: integer
       cpf:
+        $ref: '#/definitions/vos.CPF'
+        type: object
+      created_at:
         type: string
-      secret:
+      id:
         type: string
-    required:
-    - cpf
-    - secret
+      name:
+        $ref: '#/definitions/vos.Name'
+        type: object
     type: object
   responses.Error:
     properties:
@@ -36,34 +60,14 @@ definitions:
       status:
         type: integer
     type: object
-  schemas.AccountBalance:
+  transfers.CreateTransferRequest:
     properties:
-      balance:
+      account_destination_id:
+        type: string
+      amount:
         type: integer
-      id:
-        type: string
     type: object
-  schemas.AccountSchema:
-    properties:
-      balance:
-        type: integer
-      cpf:
-        $ref: '#/definitions/vos.CPF'
-        type: object
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        $ref: '#/definitions/vos.Name'
-        type: object
-    type: object
-  schemas.TokenSchema:
-    properties:
-      token:
-        type: string
-    type: object
-  schemas.TransferSchema:
+  transfers.GetTransfersResponse:
     properties:
       account_destination_id:
         type: string
@@ -78,7 +82,7 @@ definitions:
     type: object
   vos.Name:
     type: object
-host: localhost
+host: localhost:8080
 info:
   contact: {}
   license: {}
@@ -95,7 +99,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/schemas.AccountSchema'
+              $ref: '#/definitions/accounts.GetAccountsResponse'
             type: array
         "404":
           description: Not Found
@@ -125,7 +129,7 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/dtos.CreateAccountDTO'
+          $ref: '#/definitions/accounts.CreateAccountRequest'
       produces:
       - application/json
       responses:
@@ -162,9 +166,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/schemas.AccountBalance'
-            type: array
+            $ref: '#/definitions/accounts.AccountBalance'
         "404":
           description: Not Found
           schema:
@@ -195,7 +197,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/schemas.TransferSchema'
+              $ref: '#/definitions/transfers.GetTransfersResponse'
             type: array
         "404":
           description: Not Found
@@ -219,6 +221,13 @@ paths:
       consumes:
       - application/json
       description: Do Make a new transfer
+      parameters:
+      - description: Body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/transfers.CreateTransferRequest'
       produces:
       - application/json
       responses:
@@ -251,14 +260,14 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/dtos.SignInDTO'
+          $ref: '#/definitions/accounts.AuthenticateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schemas.TokenSchema'
+            $ref: '#/definitions/accounts.AuthenticateResponse'
         "400":
           description: Bad Request
           schema:

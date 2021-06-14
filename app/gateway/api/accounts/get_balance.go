@@ -21,6 +21,17 @@ func NewAccountBalance(Id vos.AccountId, balance int) AccountBalance {
 	}
 }
 
+// GetBalance @Summary accounts
+// @Description Do get account balance
+// @Tags Accounts
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} AccountBalance
+// @Failure 404 {object} responses.Error
+// @Failure 422 {object} responses.Error
+// @Failure 409 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /api/v1/accounts/{account_id}/balance [GET]
 func (h handler) GetBalance(r *http.Request) responses.Response {
 	const operation = "Handlers.Accounts.CreateAccount"
 
