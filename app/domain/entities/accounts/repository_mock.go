@@ -28,13 +28,13 @@ var _ Repository = &RepositoryMock{}
 // 			GetAllFunc: func(ctx context.Context) ([]Account, error) {
 // 				panic("mock out the GetAll method")
 // 			},
-// 			GetByCPFFunc: func(ctx context.Context, cpf vos.CPF) (*Account, error) {
+// 			GetByCPFFunc: func(ctx context.Context, cpf vos.CPF) (Account, error) {
 // 				panic("mock out the GetByCPF method")
 // 			},
-// 			GetByIDFunc: func(ctx context.Context, cpf vos.AccountId) (*Account, error) {
+// 			GetByIDFunc: func(ctx context.Context, cpf vos.AccountId) (Account, error) {
 // 				panic("mock out the GetByID method")
 // 			},
-// 			UpdateBalanceFunc: func(ctx context.Context, account *Account) error {
+// 			UpdateBalanceFunc: func(ctx context.Context, account Account) error {
 // 				panic("mock out the UpdateBalance method")
 // 			},
 // 		}
@@ -54,13 +54,13 @@ type RepositoryMock struct {
 	GetAllFunc func(ctx context.Context) ([]Account, error)
 
 	// GetByCPFFunc mocks the GetByCPF method.
-	GetByCPFFunc func(ctx context.Context, cpf vos.CPF) (*Account, error)
+	GetByCPFFunc func(ctx context.Context, cpf vos.CPF) (Account, error)
 
 	// GetByIDFunc mocks the GetByID method.
-	GetByIDFunc func(ctx context.Context, cpf vos.AccountId) (*Account, error)
+	GetByIDFunc func(ctx context.Context, cpf vos.AccountId) (Account, error)
 
 	// UpdateBalanceFunc mocks the UpdateBalance method.
-	UpdateBalanceFunc func(ctx context.Context, account *Account) error
+	UpdateBalanceFunc func(ctx context.Context, account Account) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -102,7 +102,7 @@ type RepositoryMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Account is the account argument value.
-			Account *Account
+			Account Account
 		}
 	}
 	lockCreate         sync.RWMutex
@@ -215,7 +215,7 @@ func (mock *RepositoryMock) GetAllCalls() []struct {
 }
 
 // GetByCPF calls GetByCPFFunc.
-func (mock *RepositoryMock) GetByCPF(ctx context.Context, cpf vos.CPF) (*Account, error) {
+func (mock *RepositoryMock) GetByCPF(ctx context.Context, cpf vos.CPF) (Account, error) {
 	if mock.GetByCPFFunc == nil {
 		panic("RepositoryMock.GetByCPFFunc: method is nil but Repository.GetByCPF was just called")
 	}
@@ -250,7 +250,7 @@ func (mock *RepositoryMock) GetByCPFCalls() []struct {
 }
 
 // GetByID calls GetByIDFunc.
-func (mock *RepositoryMock) GetByID(ctx context.Context, cpf vos.AccountId) (*Account, error) {
+func (mock *RepositoryMock) GetByID(ctx context.Context, cpf vos.AccountId) (Account, error) {
 	if mock.GetByIDFunc == nil {
 		panic("RepositoryMock.GetByIDFunc: method is nil but Repository.GetByID was just called")
 	}
@@ -285,13 +285,13 @@ func (mock *RepositoryMock) GetByIDCalls() []struct {
 }
 
 // UpdateBalance calls UpdateBalanceFunc.
-func (mock *RepositoryMock) UpdateBalance(ctx context.Context, account *Account) error {
+func (mock *RepositoryMock) UpdateBalance(ctx context.Context, account Account) error {
 	if mock.UpdateBalanceFunc == nil {
 		panic("RepositoryMock.UpdateBalanceFunc: method is nil but Repository.UpdateBalance was just called")
 	}
 	callInfo := struct {
 		Ctx     context.Context
-		Account *Account
+		Account Account
 	}{
 		Ctx:     ctx,
 		Account: account,
@@ -307,11 +307,11 @@ func (mock *RepositoryMock) UpdateBalance(ctx context.Context, account *Account)
 //     len(mockedRepository.UpdateBalanceCalls())
 func (mock *RepositoryMock) UpdateBalanceCalls() []struct {
 	Ctx     context.Context
-	Account *Account
+	Account Account
 } {
 	var calls []struct {
 		Ctx     context.Context
-		Account *Account
+		Account Account
 	}
 	mock.lockUpdateBalance.RLock()
 	calls = mock.calls.UpdateBalance

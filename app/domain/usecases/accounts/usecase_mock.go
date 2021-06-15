@@ -26,7 +26,7 @@ var _ UseCase = &UseCaseMock{}
 // 			GetAllFunc: func(ctx context.Context) ([]accounts.Account, error) {
 // 				panic("mock out the GetAll method")
 // 			},
-// 			GetBalanceFunc: func(ctx context.Context, id vos.AccountId) (*accounts.Account, error) {
+// 			GetBalanceFunc: func(ctx context.Context, id vos.AccountId) (accounts.Account, error) {
 // 				panic("mock out the GetBalance method")
 // 			},
 // 		}
@@ -43,7 +43,7 @@ type UseCaseMock struct {
 	GetAllFunc func(ctx context.Context) ([]accounts.Account, error)
 
 	// GetBalanceFunc mocks the GetBalance method.
-	GetBalanceFunc func(ctx context.Context, id vos.AccountId) (*accounts.Account, error)
+	GetBalanceFunc func(ctx context.Context, id vos.AccountId) (accounts.Account, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -139,7 +139,7 @@ func (mock *UseCaseMock) GetAllCalls() []struct {
 }
 
 // GetBalance calls GetBalanceFunc.
-func (mock *UseCaseMock) GetBalance(ctx context.Context, id vos.AccountId) (*accounts.Account, error) {
+func (mock *UseCaseMock) GetBalance(ctx context.Context, id vos.AccountId) (accounts.Account, error) {
 	if mock.GetBalanceFunc == nil {
 		panic("UseCaseMock.GetBalanceFunc: method is nil but UseCase.GetBalance was just called")
 	}

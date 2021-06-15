@@ -14,7 +14,7 @@ type useCase struct {
 
 type UseCase interface {
 	CreateAccount(ctx context.Context, account accounts.Account) error
-	GetBalance(ctx context.Context, id vos.AccountId) (*accounts.Account, error)
+	GetBalance(ctx context.Context, id vos.AccountId) (accounts.Account, error)
 	GetAll(ctx context.Context) ([]accounts.Account, error)
 }
 

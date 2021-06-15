@@ -40,7 +40,6 @@ func TestCreateAccount(t *testing.T) {
 		assert.Equal(t, transfers.ErrSELFTransfer, err)
 	})
 
-
 	t.Run("Should not create transfer, origin account not found", func(t *testing.T) {
 		setupUseCaseTest()
 

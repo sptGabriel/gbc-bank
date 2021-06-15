@@ -16,7 +16,7 @@ func TestEntity(t *testing.T) {
 		account := fakeAccount
 		account.Balance = 10
 		account.DebitAmount(1)
-		assert.Equal(t,9, account.Balance)
+		assert.Equal(t, 9, account.Balance)
 	})
 
 	t.Run("Should return insufficient balance", func(t *testing.T) {

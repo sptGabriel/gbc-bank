@@ -19,8 +19,8 @@ func TestGetBalance(t *testing.T) {
 	t.Run("Should get account balance", func(t *testing.T) {
 		setupUseCaseTest()
 
-		mockedRepository.GetByIDFunc = func(ctx context.Context, cpf vos.AccountId) (*accounts.Account, error) {
-			return &fakeAccount, nil
+		mockedRepository.GetByIDFunc = func(ctx context.Context, cpf vos.AccountId) (accounts.Account, error) {
+			return fakeAccount, nil
 		}
 
 		id := fakeAccount.Id
@@ -28,19 +28,19 @@ func TestGetBalance(t *testing.T) {
 		account, err := mockedUseCase.GetBalance(context.Background(), id)
 
 		assert.Nil(t, err)
-		assert.Equal(t, &fakeAccount, account)
+		assert.Equal(t, fakeAccount, account)
 	})
 
 	t.Run("Should return error when fails to call get account balance", func(t *testing.T) {
 		setupUseCaseTest()
 
-		mockedRepository.GetByIDFunc = func(ctx context.Context, cpf vos.AccountId) (*accounts.Account, error) {
-			return nil, ErrAccountNotFound
+		mockedRepository.GetByIDFunc = func(ctx context.Context, cpf vos.AccountId) (accounts.Account, error) {
+			return accounts.Account{}, ErrAccountNotFound
 		}
 
 		account, err := mockedUseCase.GetBalance(context.Background(), fakeAccount.Id)
 
 		assert.Equal(t, ErrAccountNotFound, err)
-		assert.Nil(t, account)
+		assert.Equal(t, accounts.Account{}, account)
 	})
 }

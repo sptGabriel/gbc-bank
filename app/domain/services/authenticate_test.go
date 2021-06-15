@@ -33,8 +33,8 @@ func TestAuthenticate(t *testing.T) {
 		mockedHasher.CompareFunc = func(hashedPassword []byte, password []byte) error {
 			return nil
 		}
-		mockedRepository.GetByCPFFunc = func(ctx context.Context, cpf vos.CPF) (*accounts.Account, error) {
-			return &fakeAccount, nil
+		mockedRepository.GetByCPFFunc = func(ctx context.Context, cpf vos.CPF) (accounts.Account, error) {
+			return fakeAccount, nil
 		}
 		mockedCipher.EncryptFunc = func(id string) (string, error) {
 			return expected, nil
@@ -47,8 +47,8 @@ func TestAuthenticate(t *testing.T) {
 	})
 
 	t.Run("Should not authenticate, with ErrInvalidCredentials", func(t *testing.T) {
-		mockedRepository.GetByCPFFunc = func(ctx context.Context, cpf vos.CPF) (*accounts.Account, error) {
-			return nil, accRepo.ErrAccountNotFound
+		mockedRepository.GetByCPFFunc = func(ctx context.Context, cpf vos.CPF) (accounts.Account, error) {
+			return accounts.Account{}, accRepo.ErrAccountNotFound
 		}
 
 		token, err := mockedAuth.Authenticate(context.Background(), fakeAccount.CPF, fakeAccount.Secret)
@@ -61,8 +61,8 @@ func TestAuthenticate(t *testing.T) {
 		mockedHasher.CompareFunc = func(hashedPassword []byte, password []byte) error {
 			return ErrInvalidCredentials
 		}
-		mockedRepository.GetByCPFFunc = func(ctx context.Context, cpf vos.CPF) (*accounts.Account, error) {
-			return &fakeAccount, nil
+		mockedRepository.GetByCPFFunc = func(ctx context.Context, cpf vos.CPF) (accounts.Account, error) {
+			return fakeAccount, nil
 		}
 
 		token, err := mockedAuth.Authenticate(context.Background(), fakeAccount.CPF, fakeAccount.Secret)
